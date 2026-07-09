@@ -104,7 +104,10 @@ Details: [Getting started](./docs/getting-started.md#keeping-installs-lean)
 | `@potato/debug` | Devtools |
 | `@potato/vite-plugin` | Vite defaults for SPA |
 | `create-potato` | App scaffold CLI |
-| `potato` | Meta re-exports |
+
+> Unscoped name `potato` is taken on npm — import `@potato/core` (and friends) directly.
+
+**Release:** [docs/RELEASE.md](./docs/RELEASE.md) · `pnpm release` (needs npm + GitHub auth)
 
 ---
 
