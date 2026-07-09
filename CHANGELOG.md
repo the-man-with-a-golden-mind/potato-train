@@ -22,7 +22,7 @@ First public release of the monorepo.
 - Refactors driven by **TypeScript**, not string grep
 - TEA / Elm path documented as **optional research**, not the default
 
-### Packages
+### Packages published to npm
 
 | Package | Highlights |
 |---------|------------|
@@ -39,7 +39,8 @@ First public release of the monorepo.
 | `@potato/debug` | Devtools |
 | `@potato/vite-plugin` | Vite SPA defaults |
 | `create-potato` | Scaffold **spa** / **ssr** templates |
-| `potato` | Meta re-exports |
+
+> Unscoped npm name `potato` is already taken. The monorepo meta package stays **private** — import `@potato/core` (etc.) directly.
 
 ### Examples
 
