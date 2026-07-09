@@ -10,3 +10,10 @@ dist
 .dev.vars
 coverage
 *.log
+
+# test artifacts
+test-results/
+coverage/
+playwright-report/
+*.tgz
+.npmrc.release
