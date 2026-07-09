@@ -1,0 +1,24 @@
+{
+  "name": "@potato/example-spreadsheet",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --tsconfig tsconfig.json src/server.ts",
+    "start": "tsx --tsconfig tsconfig.json src/server.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@potato/core": "workspace:*",
+    "@potato/formula": "workspace:*",
+    "@potato/ssr": "workspace:*",
+    "@potato/virtual": "workspace:*",
+    "@potato/jsx": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "esbuild": "^0.25.0",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  }
+}

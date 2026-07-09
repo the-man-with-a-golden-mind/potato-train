@@ -1,0 +1,72 @@
+{
+  "name": "potato",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Potato — monorepo meta re-exports (not published; npm name 'potato' is taken). Use @potato/core etc.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./ssr": {
+      "types": "./dist/ssr.d.ts",
+      "import": "./dist/ssr.js"
+    },
+    "./live": {
+      "types": "./dist/live.d.ts",
+      "import": "./dist/live.js"
+    },
+    "./jsx": {
+      "types": "./dist/jsx.d.ts",
+      "import": "./dist/jsx.js"
+    },
+    "./jsx/jsx-runtime": {
+      "types": "./dist/jsx-runtime.d.ts",
+      "import": "./dist/jsx-runtime.js"
+    },
+    "./html": {
+      "types": "./dist/html.d.ts",
+      "import": "./dist/html.js"
+    },
+    "./debug": {
+      "types": "./dist/debug.d.ts",
+      "import": "./dist/debug.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts src/ssr.ts src/live.ts src/jsx.ts src/jsx-runtime.ts src/html.ts src/debug.ts --format esm --dts --clean",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@potato/core": "workspace:*",
+    "@potato/jsx": "workspace:*",
+    "@potato/html": "workspace:*",
+    "@potato/ssr": "workspace:*",
+    "@potato/live": "workspace:*",
+    "@potato/debug": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.2"
+  },
+  "keywords": [
+    "potato",
+    "choo",
+    "framework",
+    "ssr",
+    "jsx",
+    "liveview",
+    "cloudflare"
+  ],
+  "license": "MIT",
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  }
+}

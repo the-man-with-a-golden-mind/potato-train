@@ -1,0 +1,9 @@
+name = "potato-cloudflare"
+main = "src/worker.tsx"
+compatibility_date = "2025-01-01"
+
+# Uncomment for D1:
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "potato"
+# database_id = "00000000-0000-0000-0000-000000000000"

@@ -1,0 +1,59 @@
+{
+  "name": "potato-train",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Potato — modern TypeScript rewrite of Choo with optional SSR, LiveViews, JSX, auth, and DB",
+  "type": "module",
+  "packageManager": "pnpm@10.11.1",
+  "workspaces": [
+    "packages/*",
+    "examples/spa",
+    "examples/ssr",
+    "examples/spreadsheet",
+    "examples/portfolio",
+    "examples/trello"
+  ],
+  "scripts": {
+    "build": "pnpm -r --filter './packages/*' run build",
+    "build:bun": "bun run --filter './packages/*' build",
+    "typecheck": "pnpm -r --filter './packages/*' run typecheck",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:bench": "vitest bench",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:all": "pnpm test:coverage && pnpm test:e2e",
+    "size": "node scripts/size-budget.mjs",
+    "dev:spa": "pnpm --filter @potato/example-spa dev",
+    "dev:ssr": "pnpm --filter @potato/example-ssr dev",
+    "dev:sheet": "pnpm --filter @potato/example-spreadsheet dev",
+    "dev:portfolio": "pnpm --filter @potato/example-portfolio dev",
+    "dev:trello": "pnpm --filter @potato/example-trello dev",
+    "dev:cf": "pnpm --dir examples/cloudflare dev",
+    "ci": "pnpm build && pnpm test:coverage && pnpm test:e2e && pnpm size",
+    "eval:types": "node scripts/eval-types.mjs",
+    "deploy:cf": "node scripts/deploy-cf.mjs",
+    "clean": "pnpm -r exec rm -rf dist",
+    "release:preflight": "node scripts/release.mjs preflight",
+    "release:npm": "node scripts/release.mjs npm",
+    "release:github": "node scripts/release.mjs github",
+    "release": "node scripts/release.mjs all"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.51.0",
+    "@tailwindcss/cli": "^4.1.11",
+    "@tailwindcss/vite": "^4.1.11",
+    "@vitest/coverage-v8": "^3.2.7",
+    "esbuild": "^0.25.0",
+    "happy-dom": "^20.10.6",
+    "tailwindcss": "^4.1.11",
+    "vitest": "^3.2.7"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": []
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}

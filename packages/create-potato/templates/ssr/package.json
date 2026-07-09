@@ -1,0 +1,26 @@
+{
+  "name": "potato-ssr",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "css": "tailwindcss -i ./src/styles.css -o ./dist/styles.css --minify",
+    "dev": "pnpm css && tsx watch --tsconfig tsconfig.json src/server.ts",
+    "start": "pnpm css && tsx --tsconfig tsconfig.json src/server.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@potato/core": "^0.1.0",
+    "@potato/jsx": "^0.1.0",
+    "@potato/live": "^0.1.0",
+    "@potato/ssr": "^0.1.0",
+    "ws": "^8.18.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.11",
+    "@types/node": "^22.13.10",
+    "@types/ws": "^8.18.0",
+    "tailwindcss": "^4.1.11",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  }
+}

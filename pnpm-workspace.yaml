@@ -1,0 +1,11 @@
+packages:
+  - 'packages/*'
+  # Examples that share the light monorepo install
+  - 'examples/spa'
+  - 'examples/ssr'
+  - 'examples/spreadsheet'
+  - 'examples/portfolio'
+  - 'examples/trello'
+  # Cloudflare example is OPTIONAL — wrangler/workerd ~150MB+.
+  # Install separately: cd examples/cloudflare && pnpm install
+  # - 'examples/cloudflare'

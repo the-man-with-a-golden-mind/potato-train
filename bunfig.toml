@@ -1,0 +1,6 @@
+# Bun workspace install (uses package.json "workspaces")
+# Always run `bun install` from the monorepo root, not from examples/.
+
+[install]
+# Link workspace packages the same way pnpm does for local @potato/*
+exact = false

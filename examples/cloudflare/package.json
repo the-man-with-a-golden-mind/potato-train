@@ -1,0 +1,28 @@
+{
+  "name": "@potato/example-cloudflare",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Optional example — not in default workspace (wrangler is heavy). From monorepo root: pnpm --filter @potato/example-cloudflare… only after linking; or cd here && pnpm install",
+  "scripts": {
+    "css": "node scripts/build-css.mjs",
+    "dev": "pnpm css && wrangler dev src/worker.tsx",
+    "deploy": "pnpm css && wrangler deploy src/worker.tsx",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@potato/cloudflare": "workspace:*",
+    "@potato/core": "workspace:*",
+    "@potato/db": "workspace:*",
+    "@potato/jsx": "workspace:*",
+    "@potato/live": "workspace:*",
+    "@potato/ssr": "workspace:*",
+    "drizzle-orm": "^0.40.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.11",
+    "tailwindcss": "^4.1.11",
+    "typescript": "^5.8.2",
+    "wrangler": "^4.0.0"
+  }
+}

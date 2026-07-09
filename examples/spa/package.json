@@ -1,0 +1,23 @@
+{
+  "name": "@potato/example-spa",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@potato/core": "workspace:*",
+    "@potato/debug": "workspace:*",
+    "@potato/jsx": "workspace:*"
+  },
+  "devDependencies": {
+    "@potato/vite-plugin": "workspace:*",
+    "@tailwindcss/vite": "^4.1.11",
+    "tailwindcss": "^4.1.11",
+    "typescript": "^5.8.2",
+    "vite": "^6.2.0"
+  }
+}

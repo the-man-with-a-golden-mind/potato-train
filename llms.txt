@@ -1,0 +1,66 @@
+# Potato — guidance for LLMs / coding agents
+
+## Read first
+
+1. **AGENTS.md** (repository root) — product law; non-negotiable
+2. **docs/architecture.md** — type spine + features
+3. **docs/interactivity.md** — SPA / client bundle / Live (why buttons die)
+4. **docs/troubleshooting.md** — common failures
+5. **examples/README.md** — copy a working demo pattern
+
+## Architecture (one way)
+
+```
+createApp<State, Events>
+  + defineFeature / defineStore (typed Events)
+  + patch(partial)   // set + re-render
+  + view: only emit — never fetch/set in the view
+```
+
+- Refactors use **TypeScript**, not grep.
+- Do **not** use `potato()` for product apps (adapters only).
+- Do **not** invent TEA/Redux/hooks as the default.
+
+## Interactivity (critical)
+
+SSR HTML does **not** run `onclick` functions.
+
+| Pattern | When |
+|---------|------|
+| Vite `app.mount` | SPA |
+| Client bundle `/assets/client.js` | Interactive SSR (sheet, portfolio) |
+| `liveClick` + WebSocket + `connectLive` | Live / multiplayer (trello, ssr) |
+
+## Forbidden
+
+- Untyped `emit('string')` without `Events`
+- `as any` / `as never` on state or emit
+- Business logic in views
+- TEA as the product default (`docs/architecture-tea.md` is optional research)
+
+## Scaffold
+
+```bash
+pnpm --filter create-potato build
+pnpm create potato my-app
+pnpm create potato my-app --template=ssr
+```
+
+## Packages
+
+`@potato/core` (0 runtime deps) · jsx · ssr · live · auth · db · formula · virtual · cloudflare · debug · vite-plugin · create-potato
+
+## Examples to copy
+
+| Example | Pattern |
+|---------|---------|
+| examples/spa | SPA + Tailwind |
+| examples/spreadsheet | Client mount + virtual grid |
+| examples/portfolio | Client mount + REST |
+| examples/trello | Live multiplayer |
+| examples/ssr | Live + auth API |
+
+## Do not
+
+- Install only inside `examples/*` (use monorepo root)
+- Expect Cloudflare in default `pnpm install` (optional: `cd examples/cloudflare && pnpm install`)

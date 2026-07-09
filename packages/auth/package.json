@@ -1,0 +1,35 @@
+{
+  "name": "@potato/auth",
+  "version": "0.1.0",
+  "description": "Potato auth — sessions, password hashing, middleware (Effect-friendly)",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --dir tests"
+  },
+  "dependencies": {
+    "@potato/ssr": "workspace:*",
+    "effect": "^3.14.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.2"
+  },
+  "license": "MIT",
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  }
+}

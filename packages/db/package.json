@@ -1,0 +1,63 @@
+{
+  "name": "@potato/db",
+  "version": "0.1.0",
+  "description": "Potato DB — Drizzle helpers for Postgres, SQLite, and Cloudflare D1",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./postgres": {
+      "types": "./dist/postgres.d.ts",
+      "import": "./dist/postgres.js"
+    },
+    "./sqlite": {
+      "types": "./dist/sqlite.d.ts",
+      "import": "./dist/sqlite.js"
+    },
+    "./d1": {
+      "types": "./dist/d1.d.ts",
+      "import": "./dist/d1.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts src/postgres.ts src/sqlite.ts src/d1.ts --format esm --dts --clean --external drizzle-orm --external better-sqlite3 --external postgres",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@potato/ssr": "workspace:*",
+    "effect": "^3.14.0"
+  },
+  "peerDependencies": {
+    "drizzle-orm": "^0.40.0",
+    "better-sqlite3": "^11.0.0",
+    "postgres": "^3.4.0"
+  },
+  "peerDependenciesMeta": {
+    "drizzle-orm": {
+      "optional": false
+    },
+    "better-sqlite3": {
+      "optional": true
+    },
+    "postgres": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "drizzle-orm": "^0.40.0",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.2"
+  },
+  "license": "MIT",
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  }
+}
