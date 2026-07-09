@@ -28,7 +28,7 @@ Open the Vite URL (usually `http://localhost:5173`).
 | `defineFeature` | Counter slice + handlers |
 | `patch` | State update + re-render |
 | Tailwind v4 | `@tailwindcss/vite` + `src/styles.css` |
-| `@potato/debug` | `window.__POTATO__` |
+| `@potato/debug` | Timeline, state diffs, panel (**Ctrl+Shift+P**), `window.__POTATO__` |
 
 ## Layout
 

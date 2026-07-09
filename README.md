@@ -109,6 +109,18 @@ Details: [Getting started](./docs/getting-started.md#keeping-installs-lean)
 
 **Release:** [docs/RELEASE.md](./docs/RELEASE.md) · `pnpm release` (needs npm + GitHub auth)
 
+### Debugger
+
+```ts
+import { devtools } from '@potato/debug'
+app.use(devtools())
+// 🥔 floating panel · Ctrl+Shift+P
+// window.__POTATO__.history / .state / .stats
+// Timeline: each emit + state diffs + render timing
+```
+
+Full guide: [docs/debug.md](./docs/debug.md)
+
 ---
 
 ## SPA (Vite + Tailwind)

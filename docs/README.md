@@ -15,6 +15,7 @@ Start here if you are new:
 | [Architecture](./architecture.md) | Type spine: State + Events + features |
 | [Interactivity](./interactivity.md) | SPA · client bundle · Live + WebSocket |
 | [Troubleshooting](./troubleshooting.md) | Dead buttons, ports, install, TS, Live |
+| [Debugger](./debug.md) | Timeline, state diffs, panel, `__POTATO__` |
 | [API reference](./api.md) | Core, SSR, Live, Auth, DB, Formula |
 | [Performance](./performance.md) | Benchmarks & virtual lists |
 | [Tutorial: Spreadsheet](./tutorials/spreadsheet.md) | Virtual grid + formulas |

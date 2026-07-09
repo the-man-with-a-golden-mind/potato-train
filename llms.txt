@@ -46,6 +46,15 @@ pnpm create potato my-app
 pnpm create potato my-app --template=ssr
 ```
 
+## Debugger
+
+```ts
+import { devtools } from '@potato/debug'
+app.use(devtools()) // Ctrl+Shift+P · window.__POTATO__ · state diffs
+```
+
+See docs/debug.md.
+
 ## Packages
 
 `@potato/core` (0 runtime deps) · jsx · ssr · live · auth · db · formula · virtual · cloudflare · debug · vite-plugin · create-potato

@@ -34,7 +34,14 @@ const app = createApp<State, Events>({
   state: combineState(counter),
 })
 
-app.use(devtools())
+// Floating panel: Ctrl+Shift+P · window.__POTATO__
+app.use(
+  devtools({
+    log: true,
+    panel: true,
+    quietFramework: true, // less noise; still in timeline
+  }),
+)
 useFeatures(app, counter)
 
 function Nav() {

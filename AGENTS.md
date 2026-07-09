@@ -140,6 +140,15 @@ Use `@potato/virtual` + window APIs (see spreadsheet example).
 | [docs/README.md](./docs/README.md) | Full index |
 | TEA notes | Advanced only — **not** default |
 
+## Debugger
+
+```ts
+import { devtools } from '@potato/debug'
+app.use(devtools()) // Ctrl+Shift+P · window.__POTATO__ · state diffs
+```
+
+See [docs/debug.md](./docs/debug.md).
+
 ## Scaffold
 
 ```bash

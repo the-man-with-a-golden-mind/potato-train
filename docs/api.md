@@ -102,6 +102,25 @@ Always available on typed `emit` via `WithFrameworkEvents<E>`.
 
 ---
 
+## `@potato/debug`
+
+```ts
+import { devtools } from '@potato/debug'
+app.use(devtools()) // panel + window.__POTATO__ + state diffs
+```
+
+| Feature | |
+|---------|--|
+| Event timeline | Every `emit` with args |
+| State diffs | What changed after each event |
+| Render timing | ms between paints |
+| UI panel | **Ctrl+Shift+P** |
+| API | `window.__POTATO__` |
+
+Full guide: [debug.md](./debug.md).
+
+---
+
 ## `@potato/ssr`
 
 ### `createServer({ app, middleware, document, live, clientEntry })`
