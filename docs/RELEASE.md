@@ -6,8 +6,9 @@ Ship Potato **0.1.0** with the release script.
 
 | Tool | Why |
 |------|-----|
-| Node 20+, pnpm | Build / test / publish |
+| Node 20+ | Runtime |
 | **npm login** (or `NPM_TOKEN`) | Publish to registry.npmjs.org |
+| Built `packages/*/dist` | Publish tarballs need built output |
 | **git** + **origin** remote | Tag and push |
 | **GitHub CLI** (`gh`) | Create GitHub Release (optional if you use the UI) |
 
@@ -16,12 +17,42 @@ npm whoami          # must print your npm username
 gh auth status      # must be logged in for gh release
 ```
 
-### Important: unscoped name `potato` is taken
+### Important: do not publish private packages
 
-The monorepo meta package `packages/potato` is **`private: true`** and is **not** published.  
-Consumers install **`@potato/core`**, `@potato/jsx`, etc., or use **`create-potato`**.
+| Path | Why `EPRIVATE` |
+|------|----------------|
+| Repo root (`potato-train`) | `"private": true` monorepo |
+| `packages/potato` | `"private": true` — unscoped name `potato` is **taken on npm** |
 
-## One-shot (when authenticated)
+Publish **`@potato/*`** and **`create-potato`** only. Consumers install those — not unscoped `potato`.
+
+## Publish with npm only (no pnpm)
+
+```bash
+cd potato-train
+npm login
+
+# Ensure packages are built first (however you build: pnpm/bun/npx tsup)
+# then:
+
+# Dry-run
+DRY_RUN=1 node scripts/release.mjs npm
+
+# Real publish (uses `npm publish --access public` in each package dir;
+# rewrites workspace:* → ^0.1.0 for the registry)
+node scripts/release.mjs npm
+```
+
+Or one package by hand (from that package directory, after rewriting workspace deps if any):
+
+```bash
+cd packages/core
+npm publish --access public
+```
+
+**Do not** run `npm publish` from the monorepo root or from `packages/potato` — that is the `EPRIVATE` error.
+
+## One-shot with monorepo scripts (optional; needs pnpm for install/build)
 
 ```bash
 cd potato-train
@@ -31,11 +62,10 @@ pnpm install
 pnpm release
 
 # Or step by step:
-pnpm release:preflight          # install, build, unit tests (+ e2e)
-SKIP_E2E=1 pnpm release:preflight   # faster
-DRY_RUN=1 pnpm release:npm      # dry-run publish
-pnpm release:npm                # real publish
-pnpm release:github             # tag v0.1.0 + gh release
+pnpm release:preflight
+DRY_RUN=1 pnpm release:npm   # still publishes via npm under the hood
+pnpm release:npm
+pnpm release:github
 ```
 
 ## Publish order (handled by the script)
@@ -112,8 +142,9 @@ pnpm create potato /tmp/potato-smoke
 
 | Issue | Fix |
 |-------|-----|
+| `EPRIVATE` | You published the **root** or **`packages/potato`**. Use `node scripts/release.mjs npm` instead. |
 | `ENEEDAUTH` | `npm login` or `export NPM_TOKEN=…` |
-| `403` on `@potato/*` | Create org/user scope on npm; you must own `@potato` |
+| `403` on `@potato/*` | Create org **potato** on npmjs.com (public packages are free); you must own `@potato` |
 | `EPUBLISHCONFLICT` | Version already exists — bump versions in all packages |
 | `gh: command not found` | Install CLI or create release in UI from tag |
 | No `origin` | `git remote add origin …` then push |

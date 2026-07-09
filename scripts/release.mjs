@@ -23,22 +23,52 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..")
 const VERSION = "0.1.0"
 const TAG = `v${VERSION}`
 
-/** Publish order (deps first). Unscoped `potato` is private (name taken on npm). */
+/**
+ * Publish order (deps first).
+ * Never publish: root (private), packages/potato (private — unscoped name taken).
+ * Uses plain `npm publish` (no pnpm required for publish).
+ */
 const PUBLISH_ORDER = [
-  "@potato/core",
-  "@potato/jsx",
-  "@potato/html",
-  "@potato/virtual",
-  "@potato/formula",
-  "@potato/debug",
-  "@potato/vite-plugin",
-  "@potato/ssr",
-  "@potato/live",
-  "@potato/auth",
-  "@potato/db",
-  "@potato/cloudflare",
-  "create-potato",
+  { name: "@potato/core", dir: "packages/core" },
+  { name: "@potato/jsx", dir: "packages/jsx" },
+  { name: "@potato/html", dir: "packages/html" },
+  { name: "@potato/virtual", dir: "packages/virtual" },
+  { name: "@potato/formula", dir: "packages/formula" },
+  { name: "@potato/debug", dir: "packages/debug" },
+  { name: "@potato/vite-plugin", dir: "packages/vite-plugin" },
+  { name: "@potato/ssr", dir: "packages/ssr" },
+  { name: "@potato/live", dir: "packages/live" },
+  { name: "@potato/auth", dir: "packages/auth" },
+  { name: "@potato/db", dir: "packages/db" },
+  { name: "@potato/cloudflare", dir: "packages/cloudflare" },
+  { name: "create-potato", dir: "packages/create-potato" },
 ]
+
+/** Rewrite monorepo `workspace:*` → registry version so npm tarballs are valid. */
+function withRegistryDeps(pkgJsonPath, fn) {
+  const original = readFileSync(pkgJsonPath, "utf8")
+  const pkg = JSON.parse(original)
+  for (const field of [
+    "dependencies",
+    "peerDependencies",
+    "optionalDependencies",
+  ]) {
+    const deps = pkg[field]
+    if (!deps) continue
+    for (const [dep, ver] of Object.entries(deps)) {
+      if (typeof ver === "string" && ver.startsWith("workspace:")) {
+        // workspace:* / workspace:^ → published caret range
+        deps[dep] = `^${VERSION}`
+      }
+    }
+  }
+  writeFileSync(pkgJsonPath, JSON.stringify(pkg, null, 2) + "\n")
+  try {
+    return fn()
+  } finally {
+    writeFileSync(pkgJsonPath, original)
+  }
+}
 
 function run(cmd, args, opts = {}) {
   console.log(`\n$ ${cmd} ${args.join(" ")}`)
@@ -107,7 +137,10 @@ Then re-run: node scripts/release.mjs npm
 }
 
 function publishNpm() {
-  console.log("=== npm publish ===")
+  console.log("=== npm publish (via npm, not pnpm) ===")
+  console.log(
+    "Skipping private packages: monorepo root, packages/potato (name taken).",
+  )
   const npmrc = ensureNpmAuth()
   const dry = process.env.DRY_RUN === "1"
   const env = npmrc
@@ -115,19 +148,30 @@ function publishNpm() {
     : {}
 
   try {
-    for (const name of PUBLISH_ORDER) {
-      console.log(`\n→ publishing ${name}@${VERSION}`)
-      const args = [
-        "--filter",
-        name,
-        "publish",
-        "--access",
-        "public",
-        "--no-git-checks",
-      ]
-      if (dry) args.push("--dry-run")
-      // pnpm publish rewrites workspace:* for the registry
-      run("pnpm", args, { env })
+    for (const { name, dir } of PUBLISH_ORDER) {
+      const pkgDir = join(root, dir)
+      const pkgJsonPath = join(pkgDir, "package.json")
+      if (!existsSync(pkgJsonPath)) {
+        console.error(`Missing ${pkgJsonPath}`)
+        process.exit(1)
+      }
+      const meta = JSON.parse(readFileSync(pkgJsonPath, "utf8"))
+      if (meta.private) {
+        console.log(`\n→ skip ${name} (private: true)`)
+        continue
+      }
+      console.log(`\n→ publishing ${name}@${VERSION} from ${dir}`)
+      withRegistryDeps(pkgJsonPath, () => {
+        const args = ["publish", "--access", "public"]
+        if (dry) args.push("--dry-run")
+        const r = spawnSync("npm", args, {
+          cwd: pkgDir,
+          stdio: "inherit",
+          env: { ...process.env, ...env },
+          shell: false,
+        })
+        if (r.status !== 0) process.exit(r.status ?? 1)
+      })
     }
     console.log(dry ? "\n✓ Dry-run complete" : "\n✓ npm publish complete")
   } finally {
