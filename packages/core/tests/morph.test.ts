@@ -331,5 +331,69 @@ describe("browser mount", () => {
     expect(document.getElementById("app")!.textContent).toMatch(/9|/)
     expect((app.state as { n?: number }).n === 9 || document.getElementById("app")!.textContent?.includes("9") || true).toBe(true)
   })
+
+  it("reconciles mixed keyed and unkeyed children correctly without clobbering", () => {
+    const host = document.createElement("div")
+    document.body.appendChild(host)
+    const state = {
+      events: {} as any,
+      params: {},
+      query: {},
+      href: "/",
+      route: "/",
+      title: "",
+      cache: (() => ({})) as any,
+    } as any
+    const root = createRoot({ state, emit: () => {} })
+
+    root.mount(
+      host,
+      h("div", null, h("input", { key: "A", id: "input-a" }), h("span", null, "B")),
+    )
+    const input = host.querySelector("input")!
+    input.focus()
+    expect(document.activeElement).toBe(input)
+
+    root.update(
+      h("div", null, h("span", null, "C"), h("input", { key: "A", id: "input-a" })),
+    )
+    expect(document.activeElement).toBe(host.querySelector("input"))
+    host.remove()
+  })
+
+  it("morphs HTML with mixed ID-keyed and unkeyed nodes correctly", () => {
+    const root = document.createElement("div")
+    root.innerHTML = '<div><span id="A">A</span><span>B</span></div>'
+    
+    // Morph to [C_unkeyed, A_keyed]
+    morphHtml(root, '<div><span>C</span><span id="A">A</span></div>')
+    expect(root.textContent).toBe("CA")
+  })
+
+  it("automatically keys route view root elements to prevent tag-morphing between different routes", () => {
+    window.history.replaceState({}, "", "/")
+    document.body.innerHTML = '<div id="app"></div>'
+    const app = potato()
+    
+    // Define two routes returning root elements with the same tag type but different content
+    app.route("/", () => h("main", null, h("h1", null, "Home")))
+    app.route("/about", () => h("main", null, h("p", null, "About page content")))
+    
+    app.mount("#app")
+    expect(document.getElementById("app")!.textContent).toContain("Home")
+    
+    // Retrieve the mounted elements
+    const homeMain = document.querySelector("main")!
+    
+    // Navigate to next route
+    app.navigate("/about")
+    app.render()
+    
+    expect(document.getElementById("app")!.textContent).toContain("About page content")
+    const aboutMain = document.querySelector("main")!
+    
+    // Verify that the old root <main> element was destroyed and replaced, rather than morphed/reused
+    expect(aboutMain).not.toBe(homeMain)
+  })
 })
 

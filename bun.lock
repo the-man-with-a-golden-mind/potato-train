@@ -31,6 +31,25 @@
         "typescript": "^5.8.2",
       },
     },
+    "examples/saper": {
+      "name": "potato-train-example-saper",
+      "version": "0.1.0",
+      "dependencies": {
+        "potato-train-core": "workspace:*",
+        "potato-train-jsx": "workspace:*",
+        "potato-train-live": "workspace:*",
+        "potato-train-ssr": "workspace:*",
+        "potato-train-virtual": "workspace:*",
+        "ws": "^8.18.1",
+      },
+      "devDependencies": {
+        "@types/node": "^22.13.10",
+        "@types/ws": "^8.18.0",
+        "esbuild": "^0.25.0",
+        "tsx": "^4.19.3",
+        "typescript": "^5.8.2",
+      },
+    },
     "examples/spa": {
       "name": "potato-train-example-spa",
       "version": "0.1.0",
@@ -135,7 +154,7 @@
     },
     "packages/create-potato": {
       "name": "create-potato",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "bin": {
         "create-potato": "./dist/cli.js",
       },
@@ -759,6 +778,8 @@
     "potato-train-debug": ["potato-train-debug@workspace:packages/debug"],
 
     "potato-train-example-portfolio": ["potato-train-example-portfolio@workspace:examples/portfolio"],
+
+    "potato-train-example-saper": ["potato-train-example-saper@workspace:examples/saper"],
 
     "potato-train-example-spa": ["potato-train-example-spa@workspace:examples/spa"],
 

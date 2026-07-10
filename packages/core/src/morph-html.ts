@@ -64,39 +64,73 @@ function morphChildren(from: Element | DocumentFragment, to: ParentNode): void {
   const toNodes = [...to.childNodes]
   const fromNodes = [...from.childNodes]
 
+  const fromNodesWithStatus = fromNodes.map((node) => ({
+    node,
+    reused: false,
+  }))
+
   // keyed map by id
-  const fromById = new Map<string, Element>()
-  for (const n of fromNodes) {
+  const fromById = new Map<string, { node: Element; originalIdx: number }>()
+  for (let idx = 0; idx < fromNodes.length; idx++) {
+    const n = fromNodes[idx]!
     if (n.nodeType === 1) {
       const el = n as Element
-      if (el.id) fromById.set(el.id, el)
+      if (el.id) {
+        fromById.set(el.id, { node: el, originalIdx: idx })
+      }
     }
   }
 
-  let fi = 0
   for (let ti = 0; ti < toNodes.length; ti++) {
     const toNode = toNodes[ti]!
-    const fromNode = from.childNodes[fi] as ChildNode | undefined
 
     if (toNode.nodeType === 3 /* Text */) {
-      if (fromNode && fromNode.nodeType === 3) {
-        if (fromNode.nodeValue !== toNode.nodeValue) {
-          fromNode.nodeValue = toNode.nodeValue
+      // Find first unused old text node
+      let matchedNode: ChildNode | null = null
+      for (let j = 0; j < fromNodesWithStatus.length; j++) {
+        const f = fromNodesWithStatus[j]!
+        if (!f.reused && f.node.nodeType === 3) {
+          matchedNode = f.node
+          f.reused = true
+          break
         }
-        fi++
+      }
+
+      const currentDom = from.childNodes[ti]
+      if (matchedNode) {
+        if (currentDom !== matchedNode) {
+          from.insertBefore(matchedNode, currentDom ?? null)
+        }
+        if (matchedNode.nodeValue !== toNode.nodeValue) {
+          matchedNode.nodeValue = toNode.nodeValue
+        }
       } else {
-        from.insertBefore(document.createTextNode(toNode.nodeValue ?? ""), fromNode ?? null)
-        fi++
+        const n = document.createTextNode(toNode.nodeValue ?? "")
+        from.insertBefore(n, currentDom ?? null)
       }
       continue
     }
 
     if (toNode.nodeType === 8 /* Comment */) {
-      if (fromNode && fromNode.nodeType === 8) {
-        fi++
+      // Find first unused old comment node
+      let matchedNode: ChildNode | null = null
+      for (let j = 0; j < fromNodesWithStatus.length; j++) {
+        const f = fromNodesWithStatus[j]!
+        if (!f.reused && f.node.nodeType === 8) {
+          matchedNode = f.node
+          f.reused = true
+          break
+        }
+      }
+
+      const currentDom = from.childNodes[ti]
+      if (matchedNode) {
+        if (currentDom !== matchedNode) {
+          from.insertBefore(matchedNode, currentDom ?? null)
+        }
       } else {
-        from.insertBefore(document.createComment(toNode.nodeValue ?? ""), fromNode ?? null)
-        fi++
+        const n = document.createComment(toNode.nodeValue ?? "")
+        from.insertBefore(n, currentDom ?? null)
       }
       continue
     }
@@ -104,41 +138,51 @@ function morphChildren(from: Element | DocumentFragment, to: ParentNode): void {
     if (toNode.nodeType !== 1) continue
     const toEl = toNode as Element
 
+    let matchedNode: Element | null = null
+
     // try id match
-    if (toEl.id && fromById.has(toEl.id)) {
-      const keyed = fromById.get(toEl.id)!
-      if (keyed !== fromNode) {
-        from.insertBefore(keyed, fromNode ?? null)
+    if (toEl.id) {
+      const match = fromById.get(toEl.id)
+      if (match) {
+        fromNodesWithStatus[match.originalIdx]!.reused = true
+        matchedNode = match.node
       }
-      morphElement(keyed, toEl)
-      fi++
-      continue
+    } else {
+      // Find first unused unkeyed node of same name
+      for (let j = 0; j < fromNodesWithStatus.length; j++) {
+        const f = fromNodesWithStatus[j]!
+        if (!f.reused && f.node.nodeType === 1) {
+          const el = f.node as Element
+          if (!el.id && el.nodeName === toEl.nodeName) {
+            f.reused = true
+            matchedNode = el
+            break
+          }
+        }
+      }
     }
 
-    if (
-      fromNode &&
-      fromNode.nodeType === 1 &&
-      (fromNode as Element).nodeName === toEl.nodeName
-    ) {
-      morphElement(fromNode as Element, toEl)
-      fi++
+    const currentDom = from.childNodes[ti]
+    if (matchedNode) {
+      if (currentDom !== matchedNode) {
+        from.insertBefore(matchedNode, currentDom ?? null)
+      }
+      morphElement(matchedNode, toEl)
     } else {
       const clone = toEl.cloneNode(false) as Element
       copyAttrs(clone, toEl)
-      // deep: morph empty clone with toEl children by replacing
       clone.innerHTML = toEl.innerHTML
-      // Better: recursive
       morphChildren(clone, toEl)
-      from.insertBefore(clone, fromNode ?? null)
-      // copy attributes already done; re-morph properly
+      from.insertBefore(clone, currentDom ?? null)
       morphElement(clone, toEl)
-      fi++
     }
   }
 
-  // remove extras
-  while (from.childNodes.length > toNodes.length) {
-    from.removeChild(from.lastChild!)
+  // clean up unused
+  for (const item of fromNodesWithStatus) {
+    if (!item.reused && item.node.parentNode === from) {
+      from.removeChild(item.node)
+    }
   }
 }
 

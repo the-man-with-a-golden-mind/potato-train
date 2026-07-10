@@ -259,12 +259,25 @@ async function runPipeline(
 }
 
 function sanitizeState(state: Record<string, unknown>): Record<string, unknown> {
-  // Drop non-serializable bits (cache, functions, events object is fine)
-  const { cache: _c, ...rest } = state as {
-    cache?: unknown
-    [k: string]: unknown
+  const out: Record<string, unknown> = {}
+  const skip = new Set(["cache", "events"])
+  for (const [k, v] of Object.entries(state)) {
+    if (skip.has(k)) continue
+    if (typeof v === "function" || typeof v === "symbol") continue
+    try {
+      const json = JSON.stringify(v)
+      if (json !== undefined) {
+        out[k] = JSON.parse(json)
+      }
+    } catch {
+      console.warn(`[potato/ssr] skipping non-serializable state key: ${k}`)
+    }
   }
-  return JSON.parse(JSON.stringify(rest)) as Record<string, unknown>
+  out.href = (state.href as string) ?? "/"
+  out.route = (state.route as string) ?? ""
+  out.params = (state.params as Record<string, string>) ?? {}
+  out.query = (state.query as Record<string, string>) ?? {}
+  return out
 }
 
 /** Compose middleware left-to-right. */
@@ -348,6 +361,9 @@ export function cors(
     }
 
     if (ctx.method === "OPTIONS") {
+      if (reqOrigin && !allow) {
+        return new Response("CORS Not Allowed", { status: 400 })
+      }
       // Preflight: 204 even when origin denied (browser treats missing ACAO as fail)
       return new Response(null, { status: 204, headers: ctx.headers })
     }

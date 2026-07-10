@@ -52,7 +52,23 @@ export interface LiveHubOptions {
   broadcast?: boolean
 }
 
-const FRAMEWORK_KEYS = new Set(["cache", "events"])
+const FRAMEWORK_KEYS = new Set([
+  "cache",
+  "events",
+  "href",
+  "params",
+  "query",
+  "route",
+  "title",
+  "nickname",
+  "cooldown",
+  "dead",
+  "scrollTop",
+  "scrollLeft",
+  "viewportH",
+  "viewportW",
+  "window",
+])
 
 /**
  * In-memory LiveView hub with multiplayer broadcast.
@@ -80,17 +96,24 @@ export function createLiveHub(opts: LiveHubOptions) {
   const serialize =
     opts.serializeState ??
     ((s: AppState) => {
-      const { cache: _c, ...rest } = s as AppState & { cache?: unknown }
-      try {
-        return JSON.parse(JSON.stringify(rest)) as Record<string, unknown>
-      } catch {
-        return {
-          href: s.href,
-          route: s.route,
-          params: s.params,
-          query: s.query,
+      const out: Record<string, unknown> = {}
+      for (const [k, v] of Object.entries(s)) {
+        if (FRAMEWORK_KEYS.has(k)) continue
+        if (typeof v === "function" || typeof v === "symbol") continue
+        try {
+          const json = JSON.stringify(v)
+          if (json !== undefined) {
+            out[k] = JSON.parse(json)
+          }
+        } catch {
+          console.warn(`[potato/live] skipping non-serializable state key: ${k}`)
         }
       }
+      out.href = s.href
+      out.route = s.route
+      out.params = s.params
+      out.query = s.query
+      return out
     })
 
   function getShared(topic: string): Record<string, unknown> {
@@ -129,6 +152,11 @@ export function createLiveHub(opts: LiveHubOptions) {
 
   function writeShared(session: LiveSession): void {
     const shared = getShared(session.topic)
+    for (const key of Object.keys(shared)) {
+      if (!(key in session.state)) {
+        delete shared[key]
+      }
+    }
     for (const [k, v] of Object.entries(session.state)) {
       if (FRAMEWORK_KEYS.has(k)) continue
       if (typeof v === "function") continue

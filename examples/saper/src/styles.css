@@ -1,0 +1,260 @@
+/* Retro Windows 95 Minesweeper Styling */
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #008080; /* Teal background */
+  font-family: "Courier New", Courier, monospace;
+  font-weight: bold;
+  user-select: none;
+  image-rendering: pixelated;
+}
+
+.saper-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 10px;
+}
+
+/* Windows 95 Bevel Board Wrapper */
+.windows-window {
+  background-color: #c0c0c0;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-bottom: 2px solid #808080;
+  border-right: 2px solid #808080;
+  box-shadow: 1px 1px 0px 0px #000000;
+  padding: 6px;
+  width: fit-content;
+}
+
+.window-titlebar {
+  background: linear-gradient(90deg, #000080, #1084d0);
+  color: white;
+  padding: 3px 6px;
+  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.window-body {
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-bottom: 2px solid #ffffff;
+  border-right: 2px solid #ffffff;
+  padding: 6px;
+  background-color: #c0c0c0;
+}
+
+/* Minesweeper Header (Stats Bar) */
+.saper-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-bottom: 2px solid #ffffff;
+  border-right: 2px solid #ffffff;
+  padding: 6px 12px;
+  margin-bottom: 6px;
+  background-color: #c0c0c0;
+}
+
+.digital-display {
+  background-color: #000000;
+  color: #ff0000;
+  font-family: monospace;
+  font-size: 22px;
+  padding: 2px 6px;
+  border: 1px solid #808080;
+  border-bottom-color: #ffffff;
+  border-right-color: #ffffff;
+  min-width: 50px;
+  text-align: right;
+  letter-spacing: 2px;
+}
+
+.smiley-btn {
+  width: 36px;
+  height: 36px;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-bottom: 2px solid #808080;
+  border-right: 2px solid #808080;
+  background-color: #c0c0c0;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  outline: none;
+}
+
+.smiley-btn:active {
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-bottom: 2px solid #ffffff;
+  border-right: 2px solid #ffffff;
+}
+
+/* Virtual Scroll Wrapper */
+.grid-scroll {
+  overflow: auto;
+  border-top: 3px solid #808080;
+  border-left: 3px solid #808080;
+  border-bottom: 3px solid #ffffff;
+  border-right: 3px solid #ffffff;
+  background-color: #c0c0c0;
+}
+
+.grid-canvas {
+  position: relative;
+  background-color: #808080;
+}
+
+.grid-body {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+/* Row of cells */
+.grid-row {
+  display: flex;
+  height: 30px;
+}
+
+/* Saper Cell */
+.saper-cell {
+  width: 30px;
+  height: 30px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-family: "Courier New", monospace;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+/* Closed Cell with Bevel */
+.saper-cell.closed {
+  border-top: 3px solid #ffffff;
+  border-left: 3px solid #ffffff;
+  border-bottom: 3px solid #808080;
+  border-right: 3px solid #808080;
+  background-color: #c0c0c0;
+}
+
+.saper-cell.closed:active {
+  border: 1px solid #808080;
+  background-color: #c0c0c0;
+}
+
+/* Open/Revealed Cell */
+.saper-cell.open {
+  border: 1px solid #808080;
+  background-color: #c0c0c0;
+}
+
+/* Digit Colors */
+.saper-cell.count-1 { color: #0000ff; }
+.saper-cell.count-2 { color: #008000; }
+.saper-cell.count-3 { color: #ff0000; }
+.saper-cell.count-4 { color: #000080; }
+.saper-cell.count-5 { color: #800000; }
+.saper-cell.count-6 { color: #008080; }
+.saper-cell.count-7 { color: #000000; }
+.saper-cell.count-8 { color: #808080; }
+
+.saper-cell.mine {
+  background-color: #ff0000;
+  border: 1px solid #808080;
+}
+
+/* Locked / Blocked cells (temporary 30s locks) */
+.saper-cell.locked {
+  background-color: #909090;
+  border: 1px solid #707070;
+  color: #505050;
+  position: relative;
+}
+
+.saper-cell.locked::after {
+  content: "🔒";
+  font-size: 10px;
+  position: absolute;
+  bottom: 1px;
+  right: 1px;
+}
+
+/* Login/Miner Screen style */
+.login-screen {
+  width: 320px;
+  padding: 15px;
+  text-align: center;
+  background-color: #c0c0c0;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-bottom: 2px solid #808080;
+  border-right: 2px solid #808080;
+  box-shadow: 1px 1px 0px 0px #000000;
+}
+
+.login-screen input {
+  width: 90%;
+  padding: 6px;
+  margin: 10px 0;
+  font-family: inherit;
+  border: 2px solid #808080;
+  border-bottom-color: #ffffff;
+  border-right-color: #ffffff;
+  outline: none;
+  background-color: #ffffff;
+}
+
+.login-screen button {
+  padding: 6px 16px;
+  font-family: inherit;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-bottom: 2px solid #808080;
+  border-right: 2px solid #808080;
+  background-color: #c0c0c0;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.login-screen button:active {
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-bottom: 2px solid #ffffff;
+  border-right: 2px solid #ffffff;
+}
+
+.mining-progress-bar {
+  height: 18px;
+  background-color: #808080;
+  border: 1px inset;
+  margin: 10px 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.mining-progress-fill {
+  height: 100%;
+  background-color: #000080;
+  transition: width 0.1s linear;
+}
+
+.mining-status-text {
+  font-size: 11px;
+  color: #000000;
+  margin-top: 4px;
+}

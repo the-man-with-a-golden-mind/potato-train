@@ -61,6 +61,43 @@ importers:
         specifier: ^5.8.2
         version: 5.9.3
 
+  examples/saper:
+    dependencies:
+      potato-train-core:
+        specifier: workspace:*
+        version: link:../../packages/core
+      potato-train-jsx:
+        specifier: workspace:*
+        version: link:../../packages/jsx
+      potato-train-live:
+        specifier: workspace:*
+        version: link:../../packages/live
+      potato-train-ssr:
+        specifier: workspace:*
+        version: link:../../packages/ssr
+      potato-train-virtual:
+        specifier: workspace:*
+        version: link:../../packages/virtual
+      ws:
+        specifier: ^8.18.1
+        version: 8.21.0
+    devDependencies:
+      '@types/node':
+        specifier: ^22.13.10
+        version: 22.20.1
+      '@types/ws':
+        specifier: ^8.18.0
+        version: 8.18.1
+      esbuild:
+        specifier: ^0.25.0
+        version: 0.25.12
+      tsx:
+        specifier: ^4.19.3
+        version: 4.23.0
+      typescript:
+        specifier: ^5.8.2
+        version: 5.9.3
+
   examples/spa:
     dependencies:
       potato-train-core:

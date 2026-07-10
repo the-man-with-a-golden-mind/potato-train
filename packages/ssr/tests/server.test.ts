@@ -162,4 +162,54 @@ describe("createServer", () => {
     expect(await res.json()).toEqual({ key: "A1", value: "=1+2" })
     expect(store.get("A1")).toBe("=1+2")
   })
+
+  it("applies auto-keying to route views during SSR rendering", async () => {
+    const app = potato()
+    app.route("/user/:id", () => h("main", null, "Profile"))
+    const vnode = app.toVNode("/user/42")
+    
+    // Verify that the root VNode has the route key automatically set
+    expect(vnode).toBeDefined()
+    expect(vnode && "key" in vnode && vnode.key).toBe("__potato_route_/user/:id")
+    expect(vnode && "props" in vnode && vnode.props.key).toBe("__potato_route_/user/:id")
+    
+    // Verify that toString output renders correctly
+    const html = app.toString("/user/42")
+    expect(html).toContain("Profile")
+  })
+
+  it("rejects CORS preflight OPTIONS requests from disallowed origins with 400", async () => {
+    const app = potato()
+    const server = createServer({
+      app,
+      middleware: [cors({ origin: ["https://app.example.com"] })],
+    })
+    const res = await server.fetch(
+      new Request("http://x/api/test", {
+        method: "OPTIONS",
+        headers: { origin: "https://evil.example.com" },
+      }),
+    )
+    expect(res.status).toBe(400)
+    expect(await res.text()).toBe("CORS Not Allowed")
+  })
+
+  it("sanitizes circular structures in state during SSR without crashing", async () => {
+    const app = potato()
+    app.route("/", () => h("div", null, "rendering"))
+    const server = createServer({ app })
+    
+    server.page("/", async () => {
+      const circular: any = {}
+      circular.self = circular
+      return { val: "ok", bad: circular }
+    })
+
+    const res = await server.fetch(new Request("http://x/"))
+    expect(res.status).toBe(200)
+    const text = await res.text()
+    expect(text).toContain("rendering")
+    expect(text).toContain('"val":"ok"')
+    expect(text).not.toContain('"bad"')
+  })
 })

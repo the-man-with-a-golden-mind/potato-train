@@ -236,62 +236,75 @@ function patchChildren(
 
   const oldList = normalizeChildren((oldChildren as PotatoChild) ?? null)
   const nextList = normalizeChildren((nextChildren as PotatoChild) ?? null)
-
-  // keyed reconciliation
-  const oldKeyed = new Map<string | number, { vnode: VNode; dom: Node; idx: number }>()
   const childNodes = [...el.childNodes]
 
-  for (let i = 0; i < oldList.length; i++) {
-    const v = oldList[i]
-    if (isVNode(v) && v.key != null && childNodes[i]) {
-      oldKeyed.set(v.key, { vnode: v, dom: childNodes[i]!, idx: i })
+  const oldChildrenWithDom = oldList
+    .map((vnode, idx) => ({
+      vnode,
+      dom: childNodes[idx],
+      reused: false,
+    }))
+    .filter((x) => x.dom !== undefined) as Array<{
+    vnode: VNode | string | number
+    dom: Node
+    reused: boolean
+  }>
+
+  const oldKeyed = new Map<string | number, { vnode: VNode; dom: Node; originalIdx: number }>()
+  for (let idx = 0; idx < oldChildrenWithDom.length; idx++) {
+    const item = oldChildrenWithDom[idx]!
+    const v = item.vnode
+    if (isVNode(v) && v.key != null) {
+      oldKeyed.set(v.key, { vnode: v, dom: item.dom, originalIdx: idx })
     }
   }
 
-  const max = Math.max(oldList.length, nextList.length)
-  let domIdx = 0
+  for (let i = 0; i < nextList.length; i++) {
+    const next = nextList[i]!
+    let matchedDom: Node | null = null
+    let matchedVNode: VNode | string | number | null = null
 
-  for (let i = 0; i < max; i++) {
-    const next = nextList[i]
-    const old = oldList[i]
-
-    if (next === undefined) {
-      // remove remaining
-      while (el.childNodes[domIdx]) {
-        el.removeChild(el.childNodes[domIdx]!)
+    if (isVNode(next) && next.key != null) {
+      const match = oldKeyed.get(next.key)
+      if (match) {
+        oldChildrenWithDom[match.originalIdx]!.reused = true
+        matchedDom = match.dom
+        matchedVNode = match.vnode
       }
-      break
-    }
-
-    if (
-      isVNode(next) &&
-      next.key != null &&
-      oldKeyed.has(next.key)
-    ) {
-      const keyed = oldKeyed.get(next.key)!
-      const currentDom = el.childNodes[domIdx]
-      if (currentDom !== keyed.dom) {
-        el.insertBefore(keyed.dom, currentDom ?? null)
-      }
-      patch(el, keyed.dom, keyed.vnode, next, ctx)
-      domIdx++
-      continue
-    }
-
-    const currentDom = el.childNodes[domIdx]
-    if (old === undefined || !currentDom) {
-      const n = createNode(next, ctx)
-      el.appendChild(n)
-      domIdx++
     } else {
-      patch(el, currentDom, old, next, ctx)
-      domIdx++
+      // Find first unused, unkeyed old child
+      for (let j = 0; j < oldChildrenWithDom.length; j++) {
+        const oldChild = oldChildrenWithDom[j]!
+        if (!oldChild.reused) {
+          const o = oldChild.vnode
+          const isOldKeyed = isVNode(o) && o.key != null
+          if (!isOldKeyed) {
+            oldChild.reused = true
+            matchedDom = oldChild.dom
+            matchedVNode = oldChild.vnode
+            break
+          }
+        }
+      }
+    }
+
+    const currentDom = el.childNodes[i]
+    if (matchedDom) {
+      if (currentDom !== matchedDom) {
+        el.insertBefore(matchedDom, currentDom ?? null)
+      }
+      patch(el, matchedDom, matchedVNode!, next, ctx)
+    } else {
+      const n = createNode(next, ctx)
+      el.insertBefore(n, currentDom ?? null)
     }
   }
 
-  // trim extras
-  while (el.childNodes.length > nextList.length) {
-    el.removeChild(el.lastChild!)
+  // clean up unused
+  for (const oldChild of oldChildrenWithDom) {
+    if (!oldChild.reused && oldChild.dom.parentNode === el) {
+      el.removeChild(oldChild.dom)
+    }
   }
 }
 

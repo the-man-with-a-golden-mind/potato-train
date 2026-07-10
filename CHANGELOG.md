@@ -2,6 +2,14 @@
 
 All notable changes to Potato packages are documented here.
 
+## [0.3.0] — 2026-07-10
+
+### Multiplayer Saper (Minesweeper)
+- Real-time multiplayer canvas with virtualized $1000\times1000$ grid rendering.
+- Proof-of-work join validation, flag validation (difficulty 3), and revive validation (difficulty 5).
+- Client-side ticking digital display and viewport synchronizers.
+- Dynamic overscan cell rendering.
+
 ## [0.2.2] — 2026-07-10
 
 ### `create-potato`

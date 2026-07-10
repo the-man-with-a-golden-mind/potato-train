@@ -6,6 +6,7 @@ packages:
   - 'examples/spreadsheet'
   - 'examples/portfolio'
   - 'examples/trello'
+  - 'examples/saper'
   # Cloudflare example is OPTIONAL — wrangler/workerd ~150MB+.
   # Install separately: cd examples/cloudflare && pnpm install
   # - 'examples/cloudflare'

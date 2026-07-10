@@ -1,7 +1,7 @@
 {
   "name": "potato-train",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Potato — modern TypeScript rewrite of Choo with optional SSR, LiveViews, JSX, auth, and DB",
   "type": "module",
   "packageManager": "pnpm@10.11.1",
@@ -11,7 +11,8 @@
     "examples/ssr",
     "examples/spreadsheet",
     "examples/portfolio",
-    "examples/trello"
+    "examples/trello",
+    "examples/saper"
   ],
   "scripts": {
     "setup": "pnpm install && pnpm build",
@@ -34,6 +35,7 @@
     "dev:sheet": "pnpm --filter potato-train-example-spreadsheet dev",
     "dev:portfolio": "pnpm --filter potato-train-example-portfolio dev",
     "dev:trello": "pnpm --filter potato-train-example-trello dev",
+    "dev:saper": "pnpm --filter potato-train-example-saper dev",
     "dev:cf": "pnpm --dir examples/cloudflare dev",
     "ci": "pnpm build && pnpm test:coverage && pnpm test:e2e && pnpm test:e2e:cli && pnpm size",
     "eval:types": "node scripts/eval-types.mjs",

@@ -227,4 +227,106 @@ describe("connectLive client", () => {
     live2.sendEvent("manual", 1)
     live2.disconnect()
   })
+
+  it("preserves focus on ID-keyed inputs during live HTML patch and handles mixed keyed/unkeyed lists correctly", async () => {
+    document.body.innerHTML = '<div id="app"><div><input id="input-a" /><span>B</span></div></div>'
+    const input = document.getElementById("input-a") as HTMLInputElement
+    input.focus()
+    expect(document.activeElement).toBe(input)
+
+    const instances: FakeWS[] = []
+    class FakeWS {
+      static OPEN = 1
+      readyState = 1
+      onopen: (() => void) | null = null
+      onmessage: ((ev: { data: string }) => void) | null = null
+      onclose: (() => void) | null = null
+      sent: string[] = []
+      constructor(public url: string) {
+        instances.push(this)
+        queueMicrotask(() => this.onopen?.())
+      }
+      send(d: string) {
+        this.sent.push(d)
+      }
+      close() {}
+    }
+    // @ts-expect-error mock
+    globalThis.WebSocket = FakeWS
+
+    const live = connectLive({
+      url: "ws://localhost/live",
+      topic: "page",
+      root: "#app",
+    })
+
+    await Promise.resolve()
+
+    // Receive a patch that has unkeyed node prepended: [C_unkeyed, A_keyed]
+    instances[0]!.onmessage?.({
+      data: encode({
+        type: "patch",
+        topic: "page",
+        html: '<div><span>C</span><input id="input-a" /></div>',
+      }),
+    })
+
+    // Verify focus is preserved on the input element
+    expect(document.activeElement).toBe(document.getElementById("input-a"))
+    // Verify structure
+    expect(document.getElementById("app")!.textContent).toBe("C")
+    live.disconnect()
+  })
+
+  it("allows deletion of keys in multiplayer session state", async () => {
+    const app = potato()
+    app.route("/", (s) => h("div", null, String((s as any).msg ?? "empty")))
+    const hub = createLiveHub({
+      app,
+      broadcast: true,
+      sharedState: () => ({ msg: "hello" }),
+      onEvent: (event, _p, session) => {
+        if (event === "delete") {
+          delete (session.state as any).msg
+        }
+      },
+    })
+
+    const sock = { send: vi.fn(), close: () => {} }
+    await hub.handleMessage(sock, encode({ type: "join", topic: "t", href: "/" }))
+    const session = [...hub.sessions.values()][0]!
+    expect(session.state.msg).toBe("hello")
+
+    await hub.handleMessage(sock, encode({ type: "event", topic: "t", event: "delete" }))
+    expect(session.state.msg).toBeUndefined()
+    expect(hub.getShared("t").msg).toBeUndefined()
+  })
+
+  it("skips non-serializable keys during state serialization without wiping other fields", async () => {
+    const app = potato()
+    const circular: any = {}
+    circular.self = circular
+
+    const hub = createLiveHub({
+      app,
+      sharedState: () => ({
+        valid: "yes",
+        invalid: circular,
+      }),
+      onEvent: () => {},
+    })
+
+    const sent: string[] = []
+    const sock = {
+      send: (d: string) => sent.push(d),
+      close: () => {},
+    }
+
+    await hub.handleMessage(sock, encode({ type: "join", topic: "t", href: "/" }))
+    const okMsg = sent.find((s) => s.includes('"type":"ok"'))
+    expect(okMsg).toBeDefined()
+    const parsed = JSON.parse(okMsg!)
+    expect(parsed.state.valid).toBe("yes")
+    expect(parsed.state.invalid).toBeUndefined()
+  })
 })

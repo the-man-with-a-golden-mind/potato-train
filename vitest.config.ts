@@ -14,6 +14,8 @@ export default defineConfig({
       "potato-train-debug": resolve(root, "packages/debug/src/index.ts"),
       "potato-train-virtual": resolve(root, "packages/virtual/src/index.ts"),
       "potato-train-html": resolve(root, "packages/html/src/index.ts"),
+      "potato-train-jsx/jsx-runtime": resolve(root, "packages/jsx/src/jsx-runtime.ts"),
+      "potato-train-jsx/jsx-dev-runtime": resolve(root, "packages/jsx/src/jsx-dev-runtime.ts"),
       "potato-train-jsx": resolve(root, "packages/jsx/src/index.ts"),
       "potato-train-vite-plugin": resolve(root, "packages/vite-plugin/src/index.ts"),
       "potato-train-cloudflare": resolve(root, "packages/cloudflare/src/index.ts"),
@@ -25,11 +27,11 @@ export default defineConfig({
     include: [
       "packages/*/tests/**/*.{test,spec}.ts",
       "packages/*/src/**/*.{test,spec}.ts",
+      "examples/*/tests/**/*.{test,spec}.ts",
     ],
     exclude: [
       "**/node_modules/**",
       "**/dist/**",
-      "examples/**",
       "e2e/**",
       "**/*.bench.ts",
     ],

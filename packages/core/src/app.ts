@@ -3,6 +3,7 @@ import { createEmitter } from "./emitter.js"
 import { EVENTS } from "./events.js"
 import { createRoot, renderToString } from "./morph.js"
 import { createRouter, parseLocation, parseQuery } from "./router.js"
+import { isVNode } from "./vnode.js"
 import type {
   AppState,
   Emit,
@@ -204,7 +205,16 @@ export function potato(opts: PotatoOptions = {}): PotatoApp {
     },
 
     route(path: string, view: View) {
-      router.add(path, view)
+      const wrappedView: View = (s, emit) => {
+        const tree = view(s, emit)
+        if (isVNode(tree) && tree.props.key == null) {
+          const matchedRoute = s.route || path
+          tree.props.key = `__potato_route_${matchedRoute}`
+          tree.key = tree.props.key
+        }
+        return tree
+      }
+      router.add(path, wrappedView)
       return app
     },
 
