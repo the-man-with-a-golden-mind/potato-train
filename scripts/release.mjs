@@ -1,13 +1,16 @@
 #!/usr/bin/env node
 /**
- * Potato 0.2.0 release helper
+ * Potato release helper.
+ *
+ * Packages version independently — publish/tag decisions always read each
+ * package's own package.json rather than one shared release number.
  *
  * Usage:
- *   node scripts/release.mjs preflight   # build + test
- *   node scripts/release.mjs npm         # publish to npm
- *   node scripts/release.mjs github      # git tag + gh release
- *   node scripts/release.mjs all         # preflight → npm → github
- *   node scripts/release.mjs build       # build packages only
+ *   node scripts/release.mjs preflight          # build + test
+ *   node scripts/release.mjs npm                # publish every package whose version is new
+ *   node scripts/release.mjs github [version]   # git tag + gh release
+ *   node scripts/release.mjs all [version]      # preflight → npm → github
+ *   node scripts/release.mjs build              # build packages only
  *
  * Auth (pick one — Automation token is best with 2FA):
  *   NPM_TOKEN=npm_...   # Granular token with "Bypass 2FA" / Automation
@@ -35,8 +38,15 @@ import { tmpdir, homedir } from "node:os"
 import { fileURLToPath } from "node:url"
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..")
-const VERSION = "0.2.0"
-const TAG = `v${VERSION}`
+
+function readVersion(dir) {
+  return JSON.parse(readFileSync(join(dir, "package.json"), "utf8")).version
+}
+
+// Packages version independently (e.g. create-potato patches without a
+// whole-monorepo bump), so there is no single release VERSION — every
+// publish/tag decision reads each package's own package.json live.
+const ROOT_VERSION = readVersion(root)
 
 /**
  * Publish order (deps first).
@@ -58,8 +68,20 @@ const PUBLISH_ORDER = [
   { name: "create-potato", dir: "packages/create-potato" },
 ]
 
-/** Rewrite monorepo `workspace:*` → registry version so npm tarballs are valid. */
-function registryPackageJson(pkg) {
+/** name → current version, read fresh from each package's own package.json. */
+function currentVersionMap() {
+  const map = new Map()
+  for (const { name, dir } of PUBLISH_ORDER) {
+    const pkgDir = join(root, dir)
+    if (existsSync(join(pkgDir, "package.json"))) {
+      map.set(name, readVersion(pkgDir))
+    }
+  }
+  return map
+}
+
+/** Rewrite monorepo `workspace:*` → each dep's real registry version. */
+function registryPackageJson(pkg, versionMap) {
   const next = structuredClone(pkg)
   for (const field of [
     "dependencies",
@@ -70,7 +92,14 @@ function registryPackageJson(pkg) {
     if (!deps) continue
     for (const [dep, ver] of Object.entries(deps)) {
       if (typeof ver === "string" && ver.startsWith("workspace:")) {
-        deps[dep] = `^${VERSION}`
+        const depVersion = versionMap.get(dep)
+        if (!depVersion) {
+          console.error(
+            `No known version for workspace dep "${dep}" (needed by ${pkg.name}). Is it missing from PUBLISH_ORDER?`,
+          )
+          process.exit(1)
+        }
+        deps[dep] = `^${depVersion}`
       }
     }
   }
@@ -85,13 +114,13 @@ function registryPackageJson(pkg) {
  * Publish from an isolated temp directory so monorepo workspaces / .npmrc
  * cannot interfere with `npm publish`.
  */
-function publishFromIsolatedCopy(pkgDir, meta, env, dry) {
+function publishFromIsolatedCopy(pkgDir, meta, env, dry, versionMap) {
   const tmp = mkdtempSync(join(tmpdir(), "potato-publish-"))
   try {
     // package.json with registry deps
     writeFileSync(
       join(tmp, "package.json"),
-      JSON.stringify(registryPackageJson(meta), null, 2) + "\n",
+      JSON.stringify(registryPackageJson(meta, versionMap), null, 2) + "\n",
     )
     // ship only what "files" declares (default dist + common bits)
     const files = meta.files || ["dist"]
@@ -390,6 +419,9 @@ function publishNpm() {
     NPM_CONFIG_USERCONFIG: npmrc,
   }
 
+  const versionMap = currentVersionMap()
+  const published = []
+
   try {
     for (const { name, dir } of PUBLISH_ORDER) {
       const pkgDir = join(root, dir)
@@ -408,23 +440,33 @@ function publishNpm() {
         process.exit(1)
       }
 
-      // Skip if version already on registry
-      const view = runCapture("npm", ["view", `${name}@${VERSION}`, "version"], {
-        env,
-      })
-      if (view.status === 0 && view.stdout === VERSION) {
-        console.log(`\n→ skip ${name}@${VERSION} (already on registry)`)
+      const pkgVersion = meta.version
+
+      // Skip if this package's own version is already on the registry
+      const view = runCapture(
+        "npm",
+        ["view", `${name}@${pkgVersion}`, "version"],
+        { env },
+      )
+      if (view.status === 0 && view.stdout === pkgVersion) {
+        console.log(`\n→ skip ${name}@${pkgVersion} (already on registry)`)
         continue
       }
 
-      console.log(`\n→ publishing ${name}@${VERSION} from ${dir}`)
-      const { status, out } = publishFromIsolatedCopy(pkgDir, meta, env, dry)
+      console.log(`\n→ publishing ${name}@${pkgVersion} from ${dir}`)
+      const { status, out } = publishFromIsolatedCopy(
+        pkgDir,
+        meta,
+        env,
+        dry,
+        versionMap,
+      )
       if (status !== 0) {
         if (/EOTP|one-time password|OTP/i.test(out)) {
           printEotpHelp()
         } else if (/EPUBLISHCONFLICT|cannot publish over/i.test(out)) {
           console.error(
-            `\n${name}@${VERSION} already exists — bump version or skip.`,
+            `\n${name}@${pkgVersion} already exists — bump version or skip.`,
           )
         } else if (/E404|Scope not found/i.test(out)) {
           console.error(`
@@ -434,9 +476,16 @@ Check package.json "name" field.
         }
         process.exit(status)
       }
+      if (!dry) published.push({ name, version: pkgVersion })
     }
     console.log(dry ? "\n✓ Dry-run complete" : "\n✓ npm publish complete")
     if (!dry) {
+      if (published.length) {
+        console.log("\nPublished:")
+        for (const p of published) console.log(`  ${p.name}@${p.version}`)
+      } else {
+        console.log("\n(nothing new — every package version was already on the registry)")
+      }
       console.log("\nVerify:")
       console.log("  npm view potato-train-core version")
       console.log("  npm view create-potato version")
@@ -444,9 +493,10 @@ Check package.json "name" field.
   } finally {
     if (npmrc && existsSync(npmrc)) unlinkSync(npmrc)
   }
+  return published
 }
 
-function ensureGit() {
+function ensureGit(tag) {
   if (!existsSync(join(root, ".git"))) {
     console.log("Initializing git repository…")
     run("git", ["init"])
@@ -456,7 +506,7 @@ function ensureGit() {
       run("git", [
         "commit",
         "-m",
-        `chore: release ${TAG}
+        `chore: release ${tag}
 
 First public release of Potato — typed Choo-shaped framework.
 See CHANGELOG.md.`,
@@ -466,14 +516,24 @@ See CHANGELOG.md.`,
     const status = runCapture("git", ["status", "--porcelain"])
     if (status.stdout) {
       run("git", ["add", "-A"])
-      run("git", ["commit", "-m", `chore: prepare ${TAG} release`])
+      run("git", ["commit", "-m", `chore: prepare ${tag} release`])
     }
   }
 }
 
-function releaseGithub() {
+/**
+ * `tagInput` is whatever the caller knows the release is: an explicit
+ * version/tag argument, or (from `all`) the single package just published.
+ * Falls back to the root package.json version — packages bump independently,
+ * so there is no other implicit "the" release version.
+ */
+function releaseGithub(tagInput) {
   console.log("=== GitHub release ===")
-  ensureGit()
+  const version = (tagInput || ROOT_VERSION).replace(/^v/, "")
+  const TAG = `v${version}`
+  console.log(`Releasing as ${TAG}${tagInput ? "" : ` (root package.json version — pass an explicit version to override, e.g. "node scripts/release.mjs github 0.2.2")`}`)
+
+  ensureGit(TAG)
 
   const remote = runCapture("git", ["remote", "get-url", "origin"])
   if (remote.status !== 0) {
@@ -524,26 +584,39 @@ Create the release in the GitHub UI from tag ${TAG}.
 
 function main() {
   const cmd = process.argv[2] || "help"
+  const versionArg = process.argv[3]
   if (cmd === "preflight") preflight()
   else if (cmd === "build") buildPackages()
   else if (cmd === "npm") publishNpm()
-  else if (cmd === "github") releaseGithub()
+  else if (cmd === "github") releaseGithub(versionArg)
   else if (cmd === "all") {
     preflight()
-    publishNpm()
-    releaseGithub()
+    const published = publishNpm()
+    // A patch release of a single package (the common case here) tags as
+    // that package's own version rather than the root's — pass an explicit
+    // version argument to force a specific tag either way.
+    const inferredTag =
+      versionArg || (published.length === 1 ? published[0].version : undefined)
+    releaseGithub(inferredTag)
   } else if (cmd === "init-git") {
-    ensureGit()
+    ensureGit(`v${ROOT_VERSION}`)
     console.log("Git ready. Add origin and push when ready.")
   } else {
-    console.log(`Usage: node scripts/release.mjs <preflight|build|npm|github|all|init-git>
+    console.log(`Usage: node scripts/release.mjs <preflight|build|npm|github|all|init-git> [version]
 
-  preflight  install, build, unit tests (+ e2e unless SKIP_E2E=1)
-  build      build all publishable packages
-  npm        build + publish potato-train-* to registry.npmjs.org
-  github     commit if needed, tag ${TAG}, push, gh release
-  all        preflight → npm → github
-  init-git   git init + initial commit only
+  preflight       install, build, unit tests (+ e2e unless SKIP_E2E=1)
+  build           build all publishable packages
+  npm             build + publish any package.json version not yet on the registry
+  github [version] commit if needed, tag v<version>, push, gh release
+                    (version defaults to root package.json; "all" instead
+                    defaults to the single package it just published, if any)
+  all [version]   preflight → npm → github
+  init-git        git init + initial commit only
+
+Examples:
+  node scripts/release.mjs npm                # publish every package whose own version is new
+  node scripts/release.mjs github 0.2.2        # tag/release v0.2.2 explicitly
+  node scripts/release.mjs all                 # publish create-potato@0.2.2 alone, tag v0.2.2 automatically
 
 Auth:
   NPM_TOKEN=npm_...   Automation / bypass-2FA token (best)

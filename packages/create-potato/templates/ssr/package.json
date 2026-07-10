@@ -2,6 +2,7 @@
   "name": "potato-ssr",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@10.11.1",
   "scripts": {
     "css": "tailwindcss -i ./src/styles.css -o ./dist/styles.css --minify",
     "dev": "npm run css && tsx watch --tsconfig tsconfig.json src/server.ts",
@@ -25,5 +26,6 @@
   },
   "engines": {
     "node": ">=20"
-  }
+  },
+  "trustedDependencies": ["@parcel/watcher", "esbuild"]
 }

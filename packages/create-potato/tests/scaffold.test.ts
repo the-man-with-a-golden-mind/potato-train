@@ -53,6 +53,9 @@ describe("create-potato scaffold", () => {
     cpSync(join(pkgRoot, "templates"), join(fakeInstall, "templates"), {
       recursive: true,
     })
+    // package.json carries "type": "module" — without it Node treats the
+    // staged CLI as CommonJS and the top-level `import` throws a SyntaxError.
+    cpSync(join(pkgRoot, "package.json"), join(fakeInstall, "package.json"))
     cli = join(fakeInstall, "dist", "cli.js")
     expect(existsSync(cli)).toBe(true)
     expect(existsSync(join(fakeInstall, "templates", "ssr"))).toBe(true)

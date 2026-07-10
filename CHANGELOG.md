@@ -2,6 +2,31 @@
 
 All notable changes to Potato packages are documented here.
 
+## [0.2.2] — 2026-07-10
+
+### `create-potato`
+
+- **Fix:** scaffolded apps pin `packageManager: pnpm@10.11.1` so a Corepack-managed `pnpm install` resolves a known-good version instead of whatever Corepack falls back to outside a pinned project
+- **Fix:** SSR template lists `@parcel/watcher` and `esbuild` under `trustedDependencies` so `bun install` doesn't silently block their native postinstall scripts (declaring `trustedDependencies` at all replaces Bun's default allow-list, so both had to be listed explicitly)
+- **Fix:** the CLI e2e harness and Vitest integration test now copy `package.json` into the simulated `node_modules` install, not just `dist/` and `templates/` — omitting it made Node treat the staged ESM `cli.js` as CommonJS and crash on the top-level `import`
+- Root `build` script runs package builds with `--workspace-concurrency=1` and a one-time retry, working around a rare upstream `tsup`/TypeScript race (`TS5055`) that could otherwise fail `pnpm build` intermittently
+
+### Release tooling
+
+- **Fix:** `scripts/release.mjs` no longer keys every publish/skip/tag decision off one hardcoded `VERSION` constant. Each package now publishes against its own `package.json` version, so an independent patch (like this `create-potato` bump) is no longer silently skipped because the constant still said `0.2.0`.
+- `workspace:*` dependency ranges are rewritten to each dependency's real current version (read live) instead of the old shared constant.
+- `github`/`all` accept an optional version argument; `all` defaults the git tag to the single package it just published when only one changed, otherwise falls back to the root `package.json` version.
+
+## [0.2.1] — 2026-07-10
+
+### `create-potato`
+
+- **Fix:** template copy no longer skips files when the package lives under `node_modules` (broke `pnpm create potato … --template=ssr`)
+- Works with **npm**, **pnpm**, and **bun** create flows; docs use `--` for npm/pnpm flags
+- Scaffolded SSR scripts use portable `npm run css` (works under npm/pnpm/bun)
+- Detect package manager for post-scaffold install/dev hints
+- Integration tests simulate a real `node_modules` install path
+
 ## [0.2.0] — 2026-07-10
 
 Safety-focused release for the first public package set.
@@ -21,16 +46,6 @@ Safety-focused release for the first public package set.
 - Release script publishes workspace dependencies as `^0.2.0`.
 - Coverage thresholds now include core runtime modules instead of excluding them behind a false 100% gate.
 - `.pnpm-store/` is ignored.
-
-## [0.2.1] — 2026-07-10
-
-### `create-potato`
-
-- **Fix:** template copy no longer skips files when the package lives under `node_modules` (broke `pnpm create potato … --template=ssr`)
-- Works with **npm**, **pnpm**, and **bun** create flows; docs use `--` for npm/pnpm flags
-- Scaffolded SSR scripts use portable `npm run css` (works under npm/pnpm/bun)
-- Detect package manager for post-scaffold install/dev hints
-- Integration tests simulate a real `node_modules` install path
 
 ## [0.1.0] — 2026-07-09
 

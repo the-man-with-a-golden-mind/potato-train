@@ -269,6 +269,9 @@ function stageCliLikeInstall(work) {
   cpSync(join(src, "templates"), join(installRoot, "templates"), {
     recursive: true,
   })
+  // package.json carries "type": "module" — without it Node treats the
+  // staged CLI as CommonJS and the top-level `import` throws a SyntaxError.
+  cpSync(join(src, "package.json"), join(installRoot, "package.json"))
   const cli = join(installRoot, "dist", "cli.js")
   if (!existsSync(cli)) fail("CLI not staged", cli)
   // Sanity: path must contain node_modules (regression for filter bug)

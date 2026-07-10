@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "potato-train",
@@ -8,19 +9,20 @@
         "@tailwindcss/cli": "^4.1.11",
         "@tailwindcss/vite": "^4.1.11",
         "@vitest/coverage-v8": "^3.2.7",
+        "esbuild": "^0.25.0",
         "happy-dom": "^20.10.6",
         "tailwindcss": "^4.1.11",
         "vitest": "^3.2.7",
       },
     },
     "examples/portfolio": {
-      "name": "@potato/example-portfolio",
+      "name": "potato-train-example-portfolio",
       "version": "0.1.0",
       "dependencies": {
-        "@potato/auth": "workspace:*",
-        "@potato/core": "workspace:*",
-        "@potato/jsx": "workspace:*",
-        "@potato/ssr": "workspace:*",
+        "potato-train-auth": "workspace:*",
+        "potato-train-core": "workspace:*",
+        "potato-train-jsx": "workspace:*",
+        "potato-train-ssr": "workspace:*",
       },
       "devDependencies": {
         "@types/node": "^22.13.10",
@@ -30,30 +32,30 @@
       },
     },
     "examples/spa": {
-      "name": "@potato/example-spa",
+      "name": "potato-train-example-spa",
       "version": "0.1.0",
       "dependencies": {
-        "@potato/core": "workspace:*",
-        "@potato/debug": "workspace:*",
-        "@potato/jsx": "workspace:*",
+        "potato-train-core": "workspace:*",
+        "potato-train-debug": "workspace:*",
+        "potato-train-jsx": "workspace:*",
       },
       "devDependencies": {
-        "@potato/vite-plugin": "workspace:*",
         "@tailwindcss/vite": "^4.1.11",
+        "potato-train-vite-plugin": "workspace:*",
         "tailwindcss": "^4.1.11",
         "typescript": "^5.8.2",
         "vite": "^6.2.0",
       },
     },
     "examples/spreadsheet": {
-      "name": "@potato/example-spreadsheet",
+      "name": "potato-train-example-spreadsheet",
       "version": "0.1.0",
       "dependencies": {
-        "@potato/core": "workspace:*",
-        "@potato/formula": "workspace:*",
-        "@potato/jsx": "workspace:*",
-        "@potato/ssr": "workspace:*",
-        "@potato/virtual": "workspace:*",
+        "potato-train-core": "workspace:*",
+        "potato-train-formula": "workspace:*",
+        "potato-train-jsx": "workspace:*",
+        "potato-train-ssr": "workspace:*",
+        "potato-train-virtual": "workspace:*",
       },
       "devDependencies": {
         "@types/node": "^22.13.10",
@@ -63,44 +65,48 @@
       },
     },
     "examples/ssr": {
-      "name": "@potato/example-ssr",
+      "name": "potato-train-example-ssr",
       "version": "0.1.0",
       "dependencies": {
-        "@potato/auth": "workspace:*",
-        "@potato/core": "workspace:*",
-        "@potato/jsx": "workspace:*",
-        "@potato/live": "workspace:*",
-        "@potato/ssr": "workspace:*",
-      },
-      "devDependencies": {
-        "@types/node": "^22.13.10",
-        "tsx": "^4.19.3",
-        "typescript": "^5.8.2",
-      },
-    },
-    "examples/trello": {
-      "name": "@potato/example-trello",
-      "version": "0.1.0",
-      "dependencies": {
-        "@potato/core": "workspace:*",
-        "@potato/jsx": "workspace:*",
-        "@potato/live": "workspace:*",
-        "@potato/ssr": "workspace:*",
+        "potato-train-auth": "workspace:*",
+        "potato-train-core": "workspace:*",
+        "potato-train-jsx": "workspace:*",
+        "potato-train-live": "workspace:*",
+        "potato-train-ssr": "workspace:*",
         "ws": "^8.18.1",
       },
       "devDependencies": {
         "@types/node": "^22.13.10",
         "@types/ws": "^8.18.0",
+        "esbuild": "^0.25.0",
+        "tsx": "^4.19.3",
+        "typescript": "^5.8.2",
+      },
+    },
+    "examples/trello": {
+      "name": "potato-train-example-trello",
+      "version": "0.1.0",
+      "dependencies": {
+        "potato-train-core": "workspace:*",
+        "potato-train-jsx": "workspace:*",
+        "potato-train-live": "workspace:*",
+        "potato-train-ssr": "workspace:*",
+        "ws": "^8.18.1",
+      },
+      "devDependencies": {
+        "@types/node": "^22.13.10",
+        "@types/ws": "^8.18.0",
+        "esbuild": "^0.25.0",
         "tsx": "^4.19.3",
         "typescript": "^5.8.2",
       },
     },
     "packages/auth": {
-      "name": "@potato/auth",
-      "version": "0.1.0",
+      "name": "potato-train-auth",
+      "version": "0.2.0",
       "dependencies": {
-        "@potato/ssr": "workspace:*",
         "effect": "^3.14.0",
+        "potato-train-ssr": "workspace:*",
       },
       "devDependencies": {
         "tsup": "^8.4.0",
@@ -108,11 +114,11 @@
       },
     },
     "packages/cloudflare": {
-      "name": "@potato/cloudflare",
-      "version": "0.1.0",
+      "name": "potato-train-cloudflare",
+      "version": "0.2.0",
       "dependencies": {
-        "@potato/live": "workspace:*",
-        "@potato/ssr": "workspace:*",
+        "potato-train-live": "workspace:*",
+        "potato-train-ssr": "workspace:*",
       },
       "devDependencies": {
         "tsup": "^8.4.0",
@@ -120,8 +126,8 @@
       },
     },
     "packages/core": {
-      "name": "@potato/core",
-      "version": "0.1.0",
+      "name": "potato-train-core",
+      "version": "0.2.0",
       "devDependencies": {
         "tsup": "^8.4.0",
         "typescript": "^5.8.2",
@@ -129,7 +135,7 @@
     },
     "packages/create-potato": {
       "name": "create-potato",
-      "version": "0.1.0",
+      "version": "0.2.1",
       "bin": {
         "create-potato": "./dist/cli.js",
       },
@@ -140,11 +146,11 @@
       },
     },
     "packages/db": {
-      "name": "@potato/db",
-      "version": "0.1.0",
+      "name": "potato-train-db",
+      "version": "0.2.0",
       "dependencies": {
-        "@potato/ssr": "workspace:*",
         "effect": "^3.14.0",
+        "potato-train-ssr": "workspace:*",
       },
       "devDependencies": {
         "drizzle-orm": "^0.40.0",
@@ -162,10 +168,10 @@
       ],
     },
     "packages/debug": {
-      "name": "@potato/debug",
-      "version": "0.1.0",
+      "name": "potato-train-debug",
+      "version": "0.2.0",
       "dependencies": {
-        "@potato/core": "workspace:*",
+        "potato-train-core": "workspace:*",
       },
       "devDependencies": {
         "tsup": "^8.4.0",
@@ -173,8 +179,8 @@
       },
     },
     "packages/formula": {
-      "name": "@potato/formula",
-      "version": "0.1.0",
+      "name": "potato-train-formula",
+      "version": "0.2.0",
       "devDependencies": {
         "tsup": "^8.4.0",
         "typescript": "^5.8.2",
@@ -182,10 +188,10 @@
       },
     },
     "packages/html": {
-      "name": "@potato/html",
-      "version": "0.1.0",
+      "name": "potato-train-html",
+      "version": "0.2.0",
       "dependencies": {
-        "@potato/core": "workspace:*",
+        "potato-train-core": "workspace:*",
       },
       "devDependencies": {
         "tsup": "^8.4.0",
@@ -193,10 +199,10 @@
       },
     },
     "packages/jsx": {
-      "name": "@potato/jsx",
-      "version": "0.1.0",
+      "name": "potato-train-jsx",
+      "version": "0.2.0",
       "dependencies": {
-        "@potato/core": "workspace:*",
+        "potato-train-core": "workspace:*",
       },
       "devDependencies": {
         "tsup": "^8.4.0",
@@ -204,11 +210,11 @@
       },
     },
     "packages/live": {
-      "name": "@potato/live",
-      "version": "0.1.0",
+      "name": "potato-train-live",
+      "version": "0.2.0",
       "dependencies": {
-        "@potato/core": "workspace:*",
-        "@potato/ssr": "workspace:*",
+        "potato-train-core": "workspace:*",
+        "potato-train-ssr": "workspace:*",
       },
       "devDependencies": {
         "tsup": "^8.4.0",
@@ -217,14 +223,14 @@
     },
     "packages/potato": {
       "name": "potato",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "dependencies": {
-        "@potato/core": "workspace:*",
-        "@potato/debug": "workspace:*",
-        "@potato/html": "workspace:*",
-        "@potato/jsx": "workspace:*",
-        "@potato/live": "workspace:*",
-        "@potato/ssr": "workspace:*",
+        "potato-train-core": "workspace:*",
+        "potato-train-debug": "workspace:*",
+        "potato-train-html": "workspace:*",
+        "potato-train-jsx": "workspace:*",
+        "potato-train-live": "workspace:*",
+        "potato-train-ssr": "workspace:*",
       },
       "devDependencies": {
         "tsup": "^8.4.0",
@@ -232,11 +238,11 @@
       },
     },
     "packages/ssr": {
-      "name": "@potato/ssr",
-      "version": "0.1.0",
+      "name": "potato-train-ssr",
+      "version": "0.2.0",
       "dependencies": {
-        "@potato/core": "workspace:*",
         "effect": "^3.14.0",
+        "potato-train-core": "workspace:*",
       },
       "devDependencies": {
         "@types/node": "^22.13.10",
@@ -245,8 +251,8 @@
       },
     },
     "packages/virtual": {
-      "name": "@potato/virtual",
-      "version": "0.1.0",
+      "name": "potato-train-virtual",
+      "version": "0.2.0",
       "devDependencies": {
         "tsup": "^8.4.0",
         "typescript": "^5.8.2",
@@ -254,8 +260,8 @@
       },
     },
     "packages/vite-plugin": {
-      "name": "@potato/vite-plugin",
-      "version": "0.1.0",
+      "name": "potato-train-vite-plugin",
+      "version": "0.2.0",
       "devDependencies": {
         "@types/node": "^22.13.10",
         "tsup": "^8.4.0",
@@ -377,40 +383,6 @@
     "@pkgjs/parseargs": ["@pkgjs/parseargs@0.11.0", "", {}, "sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg=="],
 
     "@playwright/test": ["@playwright/test@1.61.1", "", { "dependencies": { "playwright": "1.61.1" }, "bin": { "playwright": "cli.js" } }, "sha512-8nKv6+0RJSL9FE4jYOEGXnPeM/Hg12qZpmqzZjRh3qM0Y7c3z1mrOTfFLids72RDQYVh9WpLEfR5WdpNX4fkig=="],
-
-    "@potato/auth": ["@potato/auth@workspace:packages/auth"],
-
-    "@potato/cloudflare": ["@potato/cloudflare@workspace:packages/cloudflare"],
-
-    "@potato/core": ["@potato/core@workspace:packages/core"],
-
-    "@potato/db": ["@potato/db@workspace:packages/db"],
-
-    "@potato/debug": ["@potato/debug@workspace:packages/debug"],
-
-    "@potato/example-portfolio": ["@potato/example-portfolio@workspace:examples/portfolio"],
-
-    "@potato/example-spa": ["@potato/example-spa@workspace:examples/spa"],
-
-    "@potato/example-spreadsheet": ["@potato/example-spreadsheet@workspace:examples/spreadsheet"],
-
-    "@potato/example-ssr": ["@potato/example-ssr@workspace:examples/ssr"],
-
-    "@potato/example-trello": ["@potato/example-trello@workspace:examples/trello"],
-
-    "@potato/formula": ["@potato/formula@workspace:packages/formula"],
-
-    "@potato/html": ["@potato/html@workspace:packages/html"],
-
-    "@potato/jsx": ["@potato/jsx@workspace:packages/jsx"],
-
-    "@potato/live": ["@potato/live@workspace:packages/live"],
-
-    "@potato/ssr": ["@potato/ssr@workspace:packages/ssr"],
-
-    "@potato/virtual": ["@potato/virtual@workspace:packages/virtual"],
-
-    "@potato/vite-plugin": ["@potato/vite-plugin@workspace:packages/vite-plugin"],
 
     "@rollup/rollup-android-arm-eabi": ["@rollup/rollup-android-arm-eabi@4.62.2", "", { "os": "android", "cpu": "arm" }, "sha512-6o7ZLZK+BeenkZCFNDXqpbjw9bD6nuWonvS/lwQJp7NoVVxm6p3qE7qQ5jGuBjiFsgvqjD8mZAU5oWxTmbOeOg=="],
 
@@ -776,6 +748,40 @@
 
     "potato": ["potato@workspace:packages/potato"],
 
+    "potato-train-auth": ["potato-train-auth@workspace:packages/auth"],
+
+    "potato-train-cloudflare": ["potato-train-cloudflare@workspace:packages/cloudflare"],
+
+    "potato-train-core": ["potato-train-core@workspace:packages/core"],
+
+    "potato-train-db": ["potato-train-db@workspace:packages/db"],
+
+    "potato-train-debug": ["potato-train-debug@workspace:packages/debug"],
+
+    "potato-train-example-portfolio": ["potato-train-example-portfolio@workspace:examples/portfolio"],
+
+    "potato-train-example-spa": ["potato-train-example-spa@workspace:examples/spa"],
+
+    "potato-train-example-spreadsheet": ["potato-train-example-spreadsheet@workspace:examples/spreadsheet"],
+
+    "potato-train-example-ssr": ["potato-train-example-ssr@workspace:examples/ssr"],
+
+    "potato-train-example-trello": ["potato-train-example-trello@workspace:examples/trello"],
+
+    "potato-train-formula": ["potato-train-formula@workspace:packages/formula"],
+
+    "potato-train-html": ["potato-train-html@workspace:packages/html"],
+
+    "potato-train-jsx": ["potato-train-jsx@workspace:packages/jsx"],
+
+    "potato-train-live": ["potato-train-live@workspace:packages/live"],
+
+    "potato-train-ssr": ["potato-train-ssr@workspace:packages/ssr"],
+
+    "potato-train-virtual": ["potato-train-virtual@workspace:packages/virtual"],
+
+    "potato-train-vite-plugin": ["potato-train-vite-plugin@workspace:packages/vite-plugin"],
+
     "prebuild-install": ["prebuild-install@7.1.3", "", { "dependencies": { "detect-libc": "2.1.2", "expand-template": "2.0.3", "github-from-package": "0.0.0", "minimist": "1.2.8", "mkdirp-classic": "0.5.3", "napi-build-utils": "2.0.0", "node-abi": "3.94.0", "pump": "3.0.4", "rc": "1.2.8", "simple-get": "4.0.1", "tar-fs": "2.1.5", "tunnel-agent": "0.6.0" }, "bin": { "prebuild-install": "bin.js" } }, "sha512-8Mf2cbV7x1cXPUILADGI3wuhfqWvtiLA1iclTDbFRZkgRQS0NqsPZphna9V+HyTEadheuPmjaJMsbzKQFOzLug=="],
 
     "pump": ["pump@3.0.4", "", { "dependencies": { "end-of-stream": "1.4.5", "once": "1.4.0" } }, "sha512-VS7sjc6KR7e1ukRFhQSY5LM2uBWAUPiOPa/A3mkKmiMwSmRFUITt0xuj+/lesgnCv+dPIEYlkzrcyXgquIHMcA=="],
@@ -912,8 +918,6 @@
 
     "@tailwindcss/oxide-wasm32-wasi/tslib": ["tslib@2.8.1", "", { "bundled": true }, "sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w=="],
 
-    "bundle-require/esbuild": ["esbuild@0.27.7", "", { "optionalDependencies": { "@esbuild/aix-ppc64": "0.27.7", "@esbuild/android-arm": "0.27.7", "@esbuild/android-arm64": "0.27.7", "@esbuild/android-x64": "0.27.7", "@esbuild/darwin-arm64": "0.27.7", "@esbuild/darwin-x64": "0.27.7", "@esbuild/freebsd-arm64": "0.27.7", "@esbuild/freebsd-x64": "0.27.7", "@esbuild/linux-arm": "0.27.7", "@esbuild/linux-arm64": "0.27.7", "@esbuild/linux-ia32": "0.27.7", "@esbuild/linux-loong64": "0.27.7", "@esbuild/linux-mips64el": "0.27.7", "@esbuild/linux-ppc64": "0.27.7", "@esbuild/linux-riscv64": "0.27.7", "@esbuild/linux-s390x": "0.27.7", "@esbuild/linux-x64": "0.27.7", "@esbuild/netbsd-arm64": "0.27.7", "@esbuild/netbsd-x64": "0.27.7", "@esbuild/openbsd-arm64": "0.27.7", "@esbuild/openbsd-x64": "0.27.7", "@esbuild/openharmony-arm64": "0.27.7", "@esbuild/sunos-x64": "0.27.7", "@esbuild/win32-arm64": "0.27.7", "@esbuild/win32-ia32": "0.27.7", "@esbuild/win32-x64": "0.27.7" }, "bin": { "esbuild": "bin/esbuild" } }, "sha512-IxpibTjyVnmrIQo5aqNpCgoACA/dTKLTlhMHihVHhdkxKyPO1uBBthumT0rdHmcsk9uMonIWS0m4FljWzILh3w=="],
-
     "glob/minimatch": ["minimatch@9.0.9", "", { "dependencies": { "brace-expansion": "2.1.2" } }, "sha512-OBwBN9AL4dqmETlpS2zasx+vTeWclWzkblfZk7KTA5j3jeOONz/tRCnZomUyvNg83wL5Zv9Ss6HMJXAgL8R2Yg=="],
 
     "lightningcss/detect-libc": ["detect-libc@2.1.2", "", {}, "sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ=="],
@@ -941,58 +945,6 @@
     "wrap-ansi-cjs/string-width": ["string-width@4.2.3", "", { "dependencies": { "emoji-regex": "8.0.0", "is-fullwidth-code-point": "3.0.0", "strip-ansi": "6.0.1" } }, "sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g=="],
 
     "wrap-ansi-cjs/strip-ansi": ["strip-ansi@6.0.1", "", { "dependencies": { "ansi-regex": "5.0.1" } }, "sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A=="],
-
-    "bundle-require/esbuild/@esbuild/aix-ppc64": ["@esbuild/aix-ppc64@0.27.7", "", { "os": "aix", "cpu": "ppc64" }, "sha512-EKX3Qwmhz1eMdEJokhALr0YiD0lhQNwDqkPYyPhiSwKrh7/4KRjQc04sZ8db+5DVVnZ1LmbNDI1uAMPEUBnQPg=="],
-
-    "bundle-require/esbuild/@esbuild/android-arm": ["@esbuild/android-arm@0.27.7", "", { "os": "android", "cpu": "arm" }, "sha512-jbPXvB4Yj2yBV7HUfE2KHe4GJX51QplCN1pGbYjvsyCZbQmies29EoJbkEc+vYuU5o45AfQn37vZlyXy4YJ8RQ=="],
-
-    "bundle-require/esbuild/@esbuild/android-arm64": ["@esbuild/android-arm64@0.27.7", "", { "os": "android", "cpu": "arm64" }, "sha512-62dPZHpIXzvChfvfLJow3q5dDtiNMkwiRzPylSCfriLvZeq0a1bWChrGx/BbUbPwOrsWKMn8idSllklzBy+dgQ=="],
-
-    "bundle-require/esbuild/@esbuild/android-x64": ["@esbuild/android-x64@0.27.7", "", { "os": "android", "cpu": "x64" }, "sha512-x5VpMODneVDb70PYV2VQOmIUUiBtY3D3mPBG8NxVk5CogneYhkR7MmM3yR/uMdITLrC1ml/NV1rj4bMJuy9MCg=="],
-
-    "bundle-require/esbuild/@esbuild/darwin-arm64": ["@esbuild/darwin-arm64@0.27.7", "", { "os": "darwin", "cpu": "arm64" }, "sha512-5lckdqeuBPlKUwvoCXIgI2D9/ABmPq3Rdp7IfL70393YgaASt7tbju3Ac+ePVi3KDH6N2RqePfHnXkaDtY9fkw=="],
-
-    "bundle-require/esbuild/@esbuild/darwin-x64": ["@esbuild/darwin-x64@0.27.7", "", { "os": "darwin", "cpu": "x64" }, "sha512-rYnXrKcXuT7Z+WL5K980jVFdvVKhCHhUwid+dDYQpH+qu+TefcomiMAJpIiC2EM3Rjtq0sO3StMV/+3w3MyyqQ=="],
-
-    "bundle-require/esbuild/@esbuild/freebsd-arm64": ["@esbuild/freebsd-arm64@0.27.7", "", { "os": "freebsd", "cpu": "arm64" }, "sha512-B48PqeCsEgOtzME2GbNM2roU29AMTuOIN91dsMO30t+Ydis3z/3Ngoj5hhnsOSSwNzS+6JppqWsuhTp6E82l2w=="],
-
-    "bundle-require/esbuild/@esbuild/freebsd-x64": ["@esbuild/freebsd-x64@0.27.7", "", { "os": "freebsd", "cpu": "x64" }, "sha512-jOBDK5XEjA4m5IJK3bpAQF9/Lelu/Z9ZcdhTRLf4cajlB+8VEhFFRjWgfy3M1O4rO2GQ/b2dLwCUGpiF/eATNQ=="],
-
-    "bundle-require/esbuild/@esbuild/linux-arm": ["@esbuild/linux-arm@0.27.7", "", { "os": "linux", "cpu": "arm" }, "sha512-RkT/YXYBTSULo3+af8Ib0ykH8u2MBh57o7q/DAs3lTJlyVQkgQvlrPTnjIzzRPQyavxtPtfg0EopvDyIt0j1rA=="],
-
-    "bundle-require/esbuild/@esbuild/linux-arm64": ["@esbuild/linux-arm64@0.27.7", "", { "os": "linux", "cpu": "arm64" }, "sha512-RZPHBoxXuNnPQO9rvjh5jdkRmVizktkT7TCDkDmQ0W2SwHInKCAV95GRuvdSvA7w4VMwfCjUiPwDi0ZO6Nfe9A=="],
-
-    "bundle-require/esbuild/@esbuild/linux-ia32": ["@esbuild/linux-ia32@0.27.7", "", { "os": "linux", "cpu": "ia32" }, "sha512-GA48aKNkyQDbd3KtkplYWT102C5sn/EZTY4XROkxONgruHPU72l+gW+FfF8tf2cFjeHaRbWpOYa/uRBz/Xq1Pg=="],
-
-    "bundle-require/esbuild/@esbuild/linux-loong64": ["@esbuild/linux-loong64@0.27.7", "", { "os": "linux", "cpu": "none" }, "sha512-a4POruNM2oWsD4WKvBSEKGIiWQF8fZOAsycHOt6JBpZ+JN2n2JH9WAv56SOyu9X5IqAjqSIPTaJkqN8F7XOQ5Q=="],
-
-    "bundle-require/esbuild/@esbuild/linux-mips64el": ["@esbuild/linux-mips64el@0.27.7", "", { "os": "linux", "cpu": "none" }, "sha512-KabT5I6StirGfIz0FMgl1I+R1H73Gp0ofL9A3nG3i/cYFJzKHhouBV5VWK1CSgKvVaG4q1RNpCTR2LuTVB3fIw=="],
-
-    "bundle-require/esbuild/@esbuild/linux-ppc64": ["@esbuild/linux-ppc64@0.27.7", "", { "os": "linux", "cpu": "ppc64" }, "sha512-gRsL4x6wsGHGRqhtI+ifpN/vpOFTQtnbsupUF5R5YTAg+y/lKelYR1hXbnBdzDjGbMYjVJLJTd2OFmMewAgwlQ=="],
-
-    "bundle-require/esbuild/@esbuild/linux-riscv64": ["@esbuild/linux-riscv64@0.27.7", "", { "os": "linux", "cpu": "none" }, "sha512-hL25LbxO1QOngGzu2U5xeXtxXcW+/GvMN3ejANqXkxZ/opySAZMrc+9LY/WyjAan41unrR3YrmtTsUpwT66InQ=="],
-
-    "bundle-require/esbuild/@esbuild/linux-s390x": ["@esbuild/linux-s390x@0.27.7", "", { "os": "linux", "cpu": "s390x" }, "sha512-2k8go8Ycu1Kb46vEelhu1vqEP+UeRVj2zY1pSuPdgvbd5ykAw82Lrro28vXUrRmzEsUV0NzCf54yARIK8r0fdw=="],
-
-    "bundle-require/esbuild/@esbuild/linux-x64": ["@esbuild/linux-x64@0.27.7", "", { "os": "linux", "cpu": "x64" }, "sha512-hzznmADPt+OmsYzw1EE33ccA+HPdIqiCRq7cQeL1Jlq2gb1+OyWBkMCrYGBJ+sxVzve2ZJEVeePbLM2iEIZSxA=="],
-
-    "bundle-require/esbuild/@esbuild/netbsd-arm64": ["@esbuild/netbsd-arm64@0.27.7", "", { "os": "none", "cpu": "arm64" }, "sha512-b6pqtrQdigZBwZxAn1UpazEisvwaIDvdbMbmrly7cDTMFnw/+3lVxxCTGOrkPVnsYIosJJXAsILG9XcQS+Yu6w=="],
-
-    "bundle-require/esbuild/@esbuild/netbsd-x64": ["@esbuild/netbsd-x64@0.27.7", "", { "os": "none", "cpu": "x64" }, "sha512-OfatkLojr6U+WN5EDYuoQhtM+1xco+/6FSzJJnuWiUw5eVcicbyK3dq5EeV/QHT1uy6GoDhGbFpprUiHUYggrw=="],
-
-    "bundle-require/esbuild/@esbuild/openbsd-arm64": ["@esbuild/openbsd-arm64@0.27.7", "", { "os": "openbsd", "cpu": "arm64" }, "sha512-AFuojMQTxAz75Fo8idVcqoQWEHIXFRbOc1TrVcFSgCZtQfSdc1RXgB3tjOn/krRHENUB4j00bfGjyl2mJrU37A=="],
-
-    "bundle-require/esbuild/@esbuild/openbsd-x64": ["@esbuild/openbsd-x64@0.27.7", "", { "os": "openbsd", "cpu": "x64" }, "sha512-+A1NJmfM8WNDv5CLVQYJ5PshuRm/4cI6WMZRg1by1GwPIQPCTs1GLEUHwiiQGT5zDdyLiRM/l1G0Pv54gvtKIg=="],
-
-    "bundle-require/esbuild/@esbuild/openharmony-arm64": ["@esbuild/openharmony-arm64@0.27.7", "", { "os": "none", "cpu": "arm64" }, "sha512-+KrvYb/C8zA9CU/g0sR6w2RBw7IGc5J2BPnc3dYc5VJxHCSF1yNMxTV5LQ7GuKteQXZtspjFbiuW5/dOj7H4Yw=="],
-
-    "bundle-require/esbuild/@esbuild/sunos-x64": ["@esbuild/sunos-x64@0.27.7", "", { "os": "sunos", "cpu": "x64" }, "sha512-ikktIhFBzQNt/QDyOL580ti9+5mL/YZeUPKU2ivGtGjdTYoqz6jObj6nOMfhASpS4GU4Q/Clh1QtxWAvcYKamA=="],
-
-    "bundle-require/esbuild/@esbuild/win32-arm64": ["@esbuild/win32-arm64@0.27.7", "", { "os": "win32", "cpu": "arm64" }, "sha512-7yRhbHvPqSpRUV7Q20VuDwbjW5kIMwTHpptuUzV+AA46kiPze5Z7qgt6CLCK3pWFrHeNfDd1VKgyP4O+ng17CA=="],
-
-    "bundle-require/esbuild/@esbuild/win32-ia32": ["@esbuild/win32-ia32@0.27.7", "", { "os": "win32", "cpu": "ia32" }, "sha512-SmwKXe6VHIyZYbBLJrhOoCJRB/Z1tckzmgTLfFYOfpMAx63BJEaL9ExI8x7v0oAO3Zh6D/Oi1gVxEYr5oUCFhw=="],
-
-    "bundle-require/esbuild/@esbuild/win32-x64": ["@esbuild/win32-x64@0.27.7", "", { "os": "win32", "cpu": "x64" }, "sha512-56hiAJPhwQ1R4i+21FVF7V8kSD5zZTdHcVuRFMW0hn753vVfQN8xlx4uOPT4xoGH0Z/oVATuR82AiqSTDIpaHg=="],
 
     "glob/minimatch/brace-expansion": ["brace-expansion@2.1.2", "", { "dependencies": { "balanced-match": "1.0.2" } }, "sha512-w5JZcKgdhDOgOwm8H+KgbosopHMuGcl6qbulwjtz3SM7I7P3yW1eAjzMPLrIE+NQ9vjgANKHWeMHnrT0OXW1oA=="],
 
