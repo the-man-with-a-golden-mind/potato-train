@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest"
-import { potato, h } from "@potato/core"
-import { createServer } from "@potato/ssr"
+import { potato, h } from "potato-train-core"
+import { createServer } from "potato-train-ssr"
 import { potatoWorker } from "../src/index.js"
 
 describe("websocket handlers fire", () => {
@@ -24,7 +24,10 @@ describe("websocket handlers fire", () => {
     const app = potato()
     app.route("/", () => h("div", null, "x"))
     const server = createServer({ app })
-    const worker = potatoWorker({ server, live: { app } })
+    const worker = potatoWorker({
+      server,
+      live: { app, onEvent: () => {} },
+    })
     await worker.fetch(
       new Request("http://x/__potato/live", {
         headers: { Upgrade: "websocket" },

@@ -1,9 +1,9 @@
-import type { Middleware, PotatoContext } from "@potato/ssr"
+import type { Middleware, PotatoContext } from "potato-train-ssr"
 import { Context, Effect } from "effect"
 
 /**
  * Generic DB bag on request locals.
- * Concrete clients: @potato/db/postgres | sqlite | d1
+ * Concrete clients: potato-train-db/postgres | sqlite | d1
  */
 export type DbClient = unknown
 

@@ -1,5 +1,5 @@
 import { defineConfig } from "vite"
-import { potato } from "@potato/vite-plugin"
+import { potato } from "potato-train-vite-plugin"
 import tailwindcss from "@tailwindcss/vite"
 
 export default defineConfig({

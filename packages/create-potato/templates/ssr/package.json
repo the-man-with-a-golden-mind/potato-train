@@ -9,10 +9,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@potato/core": "^0.1.0",
-    "@potato/jsx": "^0.1.0",
-    "@potato/live": "^0.1.0",
-    "@potato/ssr": "^0.1.0",
+    "potato-train-core": "^0.2.0",
+    "potato-train-jsx": "^0.2.0",
+    "potato-train-live": "^0.2.0",
+    "potato-train-ssr": "^0.2.0",
     "ws": "^8.18.1"
   },
   "devDependencies": {

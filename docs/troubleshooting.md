@@ -2,7 +2,7 @@
 
 ## Install & monorepo
 
-### `Workspace dependency "@potato/core" not found`
+### `Workspace dependency "potato-train-core" not found`
 
 You ran install **inside** `examples/…`. Always:
 
@@ -30,7 +30,7 @@ pnpm dev
 ```bash
 pnpm add better-sqlite3   # sqlite adapter
 pnpm add postgres         # postgres adapter
-pnpm add drizzle-orm      # required peer of @potato/db
+pnpm add drizzle-orm      # required peer of potato-train-db
 ```
 
 ### Install is huge again
@@ -111,7 +111,7 @@ Do **not** use `as any` / `as never` on emit.
 Name clash: your file exports `function createApp` and also imports `createApp` from core.
 
 ```ts
-import { createApp as createTypedApp } from '@potato/core'
+import { createApp as createTypedApp } from 'potato-train-core'
 export function createApp() {
   const app = createTypedApp<State, Events>(…)
   return app.raw
@@ -124,16 +124,40 @@ export function createApp() {
 {
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "@potato/jsx"
+    "jsxImportSource": "potato-train-jsx"
   }
 }
 ```
 
-Vite: `@potato/vite-plugin` or set `esbuild.jsxImportSource` to `@potato/jsx`.
+Vite: `potato-train-vite-plugin` or set `esbuild.jsxImportSource` to `potato-train-jsx`.
 
 ---
 
 ## Live / WebSocket
+
+### `createLiveHub requires onEvent`
+
+`onEvent` is **required**. There is no `app.emitter` fallback.
+
+```ts
+createLiveHub({
+  app,
+  onEvent: (event, payload, session) => {
+    // mutate session.state only
+  },
+})
+```
+
+### Cross-session state weirdness / races
+
+Do **not** do this in Live:
+
+```ts
+Object.assign(app.state, session.state)
+app.emitter.emit(event, payload)
+```
+
+Mutate **`session.state` only**. Multiplayer: use `sharedState` + hub broadcast.
 
 ### WS connects then closes immediately
 
@@ -143,11 +167,30 @@ Vite: `@potato/vite-plugin` or set `esbuild.jsxImportSource` to `@potato/jsx`.
 
 ### Events lost on first click
 
-Use current `@potato/live` `connectLive` (queues until open) or live-boot with a queue. Rebuild packages after pull: `pnpm build`.
+Use current `potato-train-live` `connectLive` (queues until open) or live-boot with a queue. Rebuild packages after pull: `pnpm build`.
 
 ### Morph looks wrong after patch
 
-Ensure patches replace **view HTML** inside `#app`, not a full document. Hub uses `app.toString(href, state)`.
+Ensure patches replace **view HTML** inside `#app`, not a full document. Hub uses pure `app.toString(href, session.state)`.
+
+### `emit` during SSR does nothing / warn in console
+
+**Expected.** During `toString` / SSR / Live HTML render, `emit` is a **no-op** (views must be pure).  
+Put side effects in stores, page loaders, Live `onEvent`, or client-mounted handlers.
+
+---
+
+## CORS
+
+### Browser blocks API from another origin
+
+`cors()` default is **same-origin only** (does not reflect arbitrary `Origin` headers).
+
+```ts
+cors({ origin: ['https://app.example.com'] })
+// or public APIs:
+cors({ origin: '*' }) // never combine with credentials: true
+```
 
 ---
 
@@ -173,7 +216,7 @@ pnpm create potato my-app
 pnpm create potato my-app --template=ssr
 ```
 
-Scaffolded apps depend on **published** `@potato/*` versions (`^0.1.0`).  
+Scaffolded apps depend on **published** `potato-train-*` versions (`^0.2.0`).  
 Until publish, point `package.json` at the monorepo with `workspace:` / `link:` or develop inside `examples/`.
 
 ---

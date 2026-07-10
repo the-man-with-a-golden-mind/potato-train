@@ -57,4 +57,4 @@ PATCH /api/sheets/demo/cells/B2   { "value": "99" }
 PUT   /api/sheets/demo/cells      { "cells": { "B2": "99" } }
 ```
 
-Formulas: `=B2*C2`, `=SUM(D2:D4)`, `=IF(…)`, via `@potato/formula`.
+Formulas: `=B2*C2`, `=SUM(D2:D4)`, `=IF(…)`, via `potato-train-formula`.

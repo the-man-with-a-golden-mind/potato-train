@@ -1,1 +1,1 @@
-export * from "@potato/debug"
+export * from "potato-train-debug"

@@ -1,4 +1,4 @@
-import type { TypedEmit, WithFrameworkEvents } from "@potato/core"
+import type { TypedEmit, WithFrameworkEvents } from "potato-train-core"
 import { DEFAULT_COL_W, ROW_HEAD_W } from "./constants.js"
 import { colW, tableWidth } from "./helpers.js"
 import type { SheetEvents, SheetState } from "./types.js"
@@ -294,7 +294,7 @@ export function SheetView(state: SheetState, emit: Emit) {
         </div>
       </div>
 
-      <footer class="shrink-0 border-t border-neutral-300 bg-neutral-100 px-2.5 py-1 text-[11px] text-neutral-600">
+      <footer class="status-bar shrink-0 border-t border-neutral-300 bg-neutral-100 px-2.5 py-1 text-[11px] text-neutral-600">
         {s.rows.length
           ? `Rows ${s.window.start + 1}–${s.window.end} of ${s.totalRows.toLocaleString()} · ${s.headers.length} cols · F2 edit · arrows · Del clear · Tailwind + grid CSS`
           : "Loading rows…"}
@@ -302,4 +302,3 @@ export function SheetView(state: SheetState, emit: Emit) {
     </div>
   )
 }
-

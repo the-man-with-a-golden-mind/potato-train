@@ -1,4 +1,4 @@
-import type { PotatoApp } from "@potato/core"
+import type { PotatoApp } from "potato-train-core"
 import { Effect } from "effect"
 import {
   createContext,
@@ -126,10 +126,11 @@ export function createServer(opts: ServerOptions): PotatoServer {
           }
 
           ctx.params = matched.params
-          ctx.state.params = matched.params
+          // Request-local only — never write routing into shared app.state
+          ctx.state.params = { ...matched.params }
           ctx.state.href = ctx.url.pathname
           ctx.state.route = matched.route
-          ctx.state.query = ctx.query
+          ctx.state.query = { ...ctx.query }
 
           const loader =
             pageLoads.get(matched.route) ?? pageLoads.get(ctx.url.pathname)
@@ -138,18 +139,18 @@ export function createServer(opts: ServerOptions): PotatoServer {
             if (patch) Object.assign(ctx.state, patch)
           }
 
+          // toString uses an isolated snapshot from partial — does not mutate app.state
           const htmlBody = opts.app.toString(
             ctx.url.pathname + ctx.url.search,
             ctx.state,
           )
 
-          // Stores run during toString — pick up latest app state for rehydration
-          Object.assign(ctx.state, opts.app.state, {
-            params: ctx.params,
-            query: ctx.query,
-            href: ctx.url.pathname,
-            route: matched.route,
-          })
+          // Rehydrate from request-local state only (never merge global app.state —
+          // that was a concurrent-request / Live cross-bleed vector).
+          ctx.state.params = { ...ctx.params }
+          ctx.state.query = { ...ctx.query }
+          ctx.state.href = ctx.url.pathname
+          ctx.state.route = matched.route
 
           const docOpts: DocumentOptions = {
             clientEntry: opts.clientEntry,
@@ -279,45 +280,119 @@ export function compose(mws: Middleware[]): Middleware {
   }
 }
 
-/** CORS middleware helper. */
+/**
+ * CORS middleware helper.
+ *
+ * **Secure defaults:** does **not** reflect arbitrary `Origin` headers.
+ * Same-origin requests (no `Origin`, or Origin matching the request URL) work
+ * without config. Cross-origin clients must pass an explicit allowlist:
+ *
+ * ```ts
+ * cors({ origin: ['https://app.example.com'] })
+ * cors({ origin: '*' }) // public APIs only — never with credentials
+ * cors({ origin: (o) => o.endsWith('.example.com'), credentials: true })
+ * ```
+ */
 export function cors(
   options: {
+    /**
+     * Allowed origin(s). Default: same-origin only (reflect only when the
+     * request Origin matches `ctx.url.origin`).
+     */
     origin?: string | string[] | ((origin: string) => boolean)
     methods?: string[]
     headers?: string[]
+    /**
+     * Send `Access-Control-Allow-Credentials`. Requires a concrete (non-`*`)
+     * allowed origin — browsers reject credentials + `*`.
+     */
     credentials?: boolean
   } = {},
 ): Middleware {
   return async (ctx, next) => {
-    const origin = ctx.req.headers.get("origin") ?? "*"
-    let allow = "*"
-    if (typeof options.origin === "string") allow = options.origin
-    else if (Array.isArray(options.origin)) {
-      allow = options.origin.includes(origin) ? origin : options.origin[0] ?? "*"
-    } else if (typeof options.origin === "function") {
-      allow = options.origin(origin) ? origin : "null"
-    } else {
-      allow = origin === "null" ? "*" : origin
+    const reqOrigin = ctx.req.headers.get("origin")
+    const allow = resolveCorsOrigin(reqOrigin, ctx.url.origin, options)
+
+    if (allow) {
+      ctx.headers.set("access-control-allow-origin", allow)
+      if (allow !== "*") {
+        const vary = ctx.headers.get("vary")
+        ctx.headers.set("vary", vary ? `${vary}, Origin` : "Origin")
+      }
+      if (options.credentials) {
+        if (allow === "*") {
+          console.warn(
+            "[potato/cors] credentials:true is incompatible with origin:'*'; credentials header omitted",
+          )
+        } else {
+          ctx.headers.set("access-control-allow-credentials", "true")
+        }
+      }
+      ctx.headers.set(
+        "access-control-allow-methods",
+        (
+          options.methods ?? [
+            "GET",
+            "POST",
+            "PUT",
+            "PATCH",
+            "DELETE",
+            "OPTIONS",
+          ]
+        ).join(", "),
+      )
+      ctx.headers.set(
+        "access-control-allow-headers",
+        (options.headers ?? ["Content-Type", "Authorization"]).join(", "),
+      )
     }
-    ctx.headers.set("access-control-allow-origin", allow)
-    if (options.credentials) {
-      ctx.headers.set("access-control-allow-credentials", "true")
-    }
-    ctx.headers.set(
-      "access-control-allow-methods",
-      (options.methods ?? ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]).join(
-        ", ",
-      ),
-    )
-    ctx.headers.set(
-      "access-control-allow-headers",
-      (options.headers ?? ["Content-Type", "Authorization"]).join(", "),
-    )
+
     if (ctx.method === "OPTIONS") {
+      // Preflight: 204 even when origin denied (browser treats missing ACAO as fail)
       return new Response(null, { status: 204, headers: ctx.headers })
     }
     return next()
   }
+}
+
+function resolveCorsOrigin(
+  reqOrigin: string | null,
+  requestUrlOrigin: string,
+  options: {
+    origin?: string | string[] | ((origin: string) => boolean)
+    credentials?: boolean
+  },
+): string | null {
+  // Default: same-origin only — never reflect arbitrary third-party origins
+  if (options.origin === undefined) {
+    if (!reqOrigin) return null
+    try {
+      return new URL(reqOrigin).origin === requestUrlOrigin ? reqOrigin : null
+    } catch {
+      return null
+    }
+  }
+
+  if (typeof options.origin === "string") {
+    if (options.origin === "*") return "*"
+    if (reqOrigin && reqOrigin === options.origin) return reqOrigin
+    // Fixed origin string: echo configured value when request has no Origin
+    // (non-browser clients) so server-to-server still works.
+    if (!reqOrigin) return options.origin
+    return null
+  }
+
+  if (Array.isArray(options.origin)) {
+    if (reqOrigin && options.origin.includes(reqOrigin)) return reqOrigin
+    return null
+  }
+
+  if (typeof options.origin === "function") {
+    if (reqOrigin && options.origin(reqOrigin)) return reqOrigin
+    return null
+  }
+
+  return null
 }
 
 /** Simple logger middleware. */

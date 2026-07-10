@@ -346,8 +346,20 @@ function setProp(
   }
 
   if (key === "style" && value && typeof value === "object") {
-    const style = el as HTMLElement
-    Object.assign(style.style, value)
+    const styleEl = el as HTMLElement
+    const prev =
+      _old && typeof _old === "object" && !Array.isArray(_old)
+        ? (_old as Record<string, unknown>)
+        : null
+    if (prev) {
+      for (const k of Object.keys(prev)) {
+        if (!(k in (value as object))) {
+          // Clear removed CSS properties so stale styles do not stick
+          ;(styleEl.style as unknown as Record<string, string>)[k] = ""
+        }
+      }
+    }
+    Object.assign(styleEl.style, value)
     return
   }
 
@@ -397,6 +409,16 @@ function removeProp(el: Element, key: string, old: unknown): void {
   }
   if (key === "className" || key === "class") {
     el.removeAttribute("class")
+    return
+  }
+  if (key === "style") {
+    const styleEl = el as HTMLElement
+    if (old && typeof old === "object" && !Array.isArray(old)) {
+      for (const k of Object.keys(old as object)) {
+        ;(styleEl.style as unknown as Record<string, string>)[k] = ""
+      }
+    }
+    styleEl.removeAttribute("style")
     return
   }
   el.removeAttribute(key)

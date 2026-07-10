@@ -1,1 +1,1 @@
-export * from "@potato/jsx"
+export * from "potato-train-jsx"

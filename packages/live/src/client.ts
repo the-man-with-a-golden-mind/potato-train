@@ -1,4 +1,4 @@
-import { morphHtml } from "@potato/core"
+import { morphHtml } from "potato-train-core"
 import type { ClientMessage, ServerMessage } from "./protocol.js"
 import { decode, encode } from "./protocol.js"
 

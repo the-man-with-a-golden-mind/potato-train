@@ -19,13 +19,22 @@ export interface StoreApi<
   E extends EventMap = EventMap,
 > {
   get(): AppState & S
-  /** Merge into state (no render). Prefer `patch` for UI updates. */
+  /**
+   * Silent merge into state — **does not re-render**.
+   * Use for batching multiple writes before a single `emit('render')`,
+   * or when a later `patch`/`update` will paint.
+   */
   set(patch: Partial<S>): void
   /**
    * Merge into state and emit `render`.
-   * Preferred for almost all handlers — avoids forgotten paints.
+   * **Preferred for almost all handlers** — avoids forgotten paints.
    */
   patch(partial: Partial<S>): void
+  /**
+   * Mutate a draft in place, then emit `render`.
+   * Same paint semantics as `patch`; use when you need push/splice/nested edits.
+   * (Previously silent — now paints so UI cannot go stale after draft edits.)
+   */
   update(fn: (draft: AppState & S) => void): void
   on: TypedOn<WithFrameworkEvents<E>>
   emit: TypedEmit<WithFrameworkEvents<E>>
@@ -101,6 +110,7 @@ export function defineStore<
 
     const update = (fn: (draft: AppState & S) => void): void => {
       fn(state as AppState & S)
+      emitter.emit(EVENTS.RENDER)
     }
 
     const api: StoreApi<S, E> = {

@@ -1,6 +1,6 @@
 /** @vitest-environment happy-dom */
 import { describe, expect, it, vi, beforeEach } from "vitest"
-import { potato, h, defineStore } from "@potato/core"
+import { potato, h, defineStore } from "potato-train-core"
 import {
   createLiveHub,
   encode,
@@ -59,7 +59,6 @@ describe("createLiveHub multiplayer", () => {
         if (event === "inc") {
           const n = Number((session.state as { n?: number }).n ?? 0) + 1
           ;(session.state as { n: number }).n = n
-          app.state.n = n
         }
       },
     })
@@ -107,18 +106,20 @@ describe("createLiveHub multiplayer", () => {
     })
   })
 
-  it("default onEvent uses app emitter", async () => {
+  it("onEvent mutates session.state only (no app.emitter)", async () => {
     const app = potato()
-    app.use(
-      defineStore("c", { n: 0 }, ({ set, on, emit, get }) => {
-        on("bump", () => {
-          set({ n: get().n + 1 })
-          emit("render")
-        })
-      }),
-    )
-    app.route("/", (s) => h("i", null, String((s as { n: number }).n)))
-    const hub = createLiveHub({ app, broadcast: false })
+    app.route("/", (s) => h("i", null, String((s as { n: number }).n ?? 0)))
+    const hub = createLiveHub({
+      app,
+      broadcast: false,
+      sharedState: () => ({ n: 0 }),
+      onEvent: (event, _p, session) => {
+        if (event === "bump") {
+          ;(session.state as { n: number }).n =
+            Number((session.state as { n?: number }).n ?? 0) + 1
+        }
+      },
+    })
     const sock = { send: vi.fn(), close: () => {} }
     await hub.handleMessage(
       sock,
@@ -129,6 +130,15 @@ describe("createLiveHub multiplayer", () => {
       encode({ type: "event", topic: "p", event: "bump" }),
     )
     expect(sock.send).toHaveBeenCalled()
+    expect((app.state as { n?: number }).n).toBeUndefined()
+  })
+
+  it("requires onEvent", () => {
+    const app = potato()
+    expect(() =>
+      // @ts-expect-error onEvent required
+      createLiveHub({ app }),
+    ).toThrow(/onEvent/)
   })
 })
 

@@ -1,7 +1,7 @@
 # Install from npm
 
 Use this when you **are not** developing inside the Potato monorepo.  
-Packages are published as `@potato/*` and `create-potato` (see [CHANGELOG](../CHANGELOG.md)).
+Packages are published as **`potato-train-*`** and **`create-potato`** (see [CHANGELOG](../CHANGELOG.md)).
 
 > If packages are not on the registry yet, use the [monorepo](./getting-started.md) or `pnpm link` / workspace path overrides.
 
@@ -33,14 +33,14 @@ pnpm dev
 ```bash
 mkdir my-app && cd my-app
 pnpm init
-pnpm add @potato/core @potato/jsx @potato/debug
-pnpm add -D vite typescript @potato/vite-plugin @tailwindcss/vite tailwindcss
+pnpm add potato-train-core potato-train-jsx potato-train-debug
+pnpm add -D vite typescript potato-train-vite-plugin @tailwindcss/vite tailwindcss
 ```
 
 ```ts
 // vite.config.ts
 import { defineConfig } from 'vite'
-import { potato } from '@potato/vite-plugin'
+import { potato } from 'potato-train-vite-plugin'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
@@ -56,7 +56,7 @@ export default defineConfig({
 ```ts
 // src/main.tsx
 import './styles.css'
-import { createApp, defineFeature, combineState, useFeatures } from '@potato/core'
+import { createApp, defineFeature, combineState, useFeatures } from 'potato-train-core'
 
 type State = { count: number }
 type Events = { 'counter:inc': [n?: number] }
@@ -82,7 +82,7 @@ app.mount('#app')
 {
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "@potato/jsx",
+    "jsxImportSource": "potato-train-jsx",
     "moduleResolution": "Bundler",
     "module": "ESNext",
     "target": "ES2022",
@@ -94,14 +94,14 @@ app.mount('#app')
 ## Option C — Manual SSR
 
 ```bash
-pnpm add @potato/core @potato/jsx @potato/ssr @potato/live
+pnpm add potato-train-core potato-train-jsx potato-train-ssr potato-train-live
 pnpm add -D typescript tsx @types/node
 # for Live on Node, also: pnpm add ws && pnpm add -D @types/ws
 ```
 
 ```ts
-import { createApp, asRawApp } from '@potato/core'
-import { createServer, logger } from '@potato/ssr'
+import { createApp, asRawApp } from 'potato-train-core'
+import { createServer, logger } from 'potato-train-ssr'
 
 type State = { title: string }
 type Events = Record<string, never>
@@ -122,25 +122,25 @@ For **clickable** SSR UIs, see [Interactivity](./interactivity.md) (client bundl
 
 | Package | Install when you need… |
 |---------|-------------------------|
-| `@potato/auth` | Sessions / login |
-| `@potato/db` | Drizzle helpers — also `pnpm add drizzle-orm` (peer) |
-| `@potato/db` + SQLite | `pnpm add better-sqlite3` (optional peer) |
-| `@potato/db` + Postgres | `pnpm add postgres` (optional peer) |
-| `@potato/live` | LiveView-style patches |
-| `@potato/cloudflare` | Workers adapter |
-| `@potato/formula` | Spreadsheet formulas |
-| `@potato/virtual` | Virtual list windows |
-| `@potato/debug` | Devtools |
+| `potato-train-auth` | Sessions / login |
+| `potato-train-db` | Drizzle helpers — also `pnpm add drizzle-orm` (peer) |
+| `potato-train-db` + SQLite | `pnpm add better-sqlite3` (optional peer) |
+| `potato-train-db` + Postgres | `pnpm add postgres` (optional peer) |
+| `potato-train-live` | LiveView-style patches |
+| `potato-train-cloudflare` | Workers adapter |
+| `potato-train-formula` | Spreadsheet formulas |
+| `potato-train-virtual` | Virtual list windows |
+| `potato-train-debug` | Devtools |
 
 ```bash
-pnpm add @potato/auth @potato/live
-pnpm add drizzle-orm          # if using @potato/db
+pnpm add potato-train-auth potato-train-live
+pnpm add drizzle-orm          # if using potato-train-db
 pnpm add better-sqlite3       # only if using sqlite adapter
 ```
 
 ## Versioning
 
-Align major/minor across `@potato/*` for a given release (e.g. all `0.1.x`).  
+Align major/minor across `potato-train-*` for a given release (e.g. all `0.1.x`).  
 See [CHANGELOG](../CHANGELOG.md).
 
 ## Next

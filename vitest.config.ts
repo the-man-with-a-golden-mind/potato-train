@@ -6,18 +6,18 @@ const root = import.meta.dirname
 export default defineConfig({
   resolve: {
     alias: {
-      "@potato/core": resolve(root, "packages/core/src/index.ts"),
-      "@potato/ssr": resolve(root, "packages/ssr/src/index.ts"),
-      "@potato/auth": resolve(root, "packages/auth/src/index.ts"),
-      "@potato/formula": resolve(root, "packages/formula/src/index.ts"),
-      "@potato/live": resolve(root, "packages/live/src/index.ts"),
-      "@potato/debug": resolve(root, "packages/debug/src/index.ts"),
-      "@potato/virtual": resolve(root, "packages/virtual/src/index.ts"),
-      "@potato/html": resolve(root, "packages/html/src/index.ts"),
-      "@potato/jsx": resolve(root, "packages/jsx/src/index.ts"),
-      "@potato/vite-plugin": resolve(root, "packages/vite-plugin/src/index.ts"),
-      "@potato/cloudflare": resolve(root, "packages/cloudflare/src/index.ts"),
-      "@potato/db": resolve(root, "packages/db/src/index.ts"),
+      "potato-train-core": resolve(root, "packages/core/src/index.ts"),
+      "potato-train-ssr": resolve(root, "packages/ssr/src/index.ts"),
+      "potato-train-auth": resolve(root, "packages/auth/src/index.ts"),
+      "potato-train-formula": resolve(root, "packages/formula/src/index.ts"),
+      "potato-train-live": resolve(root, "packages/live/src/index.ts"),
+      "potato-train-debug": resolve(root, "packages/debug/src/index.ts"),
+      "potato-train-virtual": resolve(root, "packages/virtual/src/index.ts"),
+      "potato-train-html": resolve(root, "packages/html/src/index.ts"),
+      "potato-train-jsx": resolve(root, "packages/jsx/src/index.ts"),
+      "potato-train-vite-plugin": resolve(root, "packages/vite-plugin/src/index.ts"),
+      "potato-train-cloudflare": resolve(root, "packages/cloudflare/src/index.ts"),
+      "potato-train-db": resolve(root, "packages/db/src/index.ts"),
     },
   },
   test: {
@@ -63,32 +63,23 @@ export default defineConfig({
         "**/strict-state.ts",
         "**/typed-paths.ts",
         "**/typed-events.ts",
+        // Optional native drivers — not exercised in default CI
         "packages/db/src/postgres.ts",
         "packages/db/src/sqlite.ts",
+        "packages/db/src/d1.ts",
+        // Meta / scaffold packages (not runtime framework surface)
         "packages/potato/**",
         "packages/create-potato/**",
-        // DOM morph engines — unit tests + Playwright; branch explosion excluded from gate
-        "packages/core/src/morph.ts",
+        // HTML morph path is covered by Live e2e; branch surface is huge
         "packages/core/src/morph-html.ts",
-        // Thin leftover edge paths still covered by tests but not 100% branch-complete:
-        "packages/core/src/cache.ts",
-        "packages/core/src/app.ts",
-        "packages/core/src/router.ts",
-        "packages/auth/src/index.ts",
-        "packages/cloudflare/src/index.ts",
-        "packages/debug/src/index.ts",
-        "packages/formula/src/index.ts",
-        "packages/html/src/index.ts",
-        "packages/live/src/client.ts",
-        "packages/live/src/server.ts",
-        "packages/ssr/src/server.ts",
-        "packages/ssr/src/context.ts",
       ],
+      // Honest gate: critical runtime modules (app, router, morph, ssr, live, auth)
+      // are included. Thresholds reflect real coverage, not 100% via exclusions.
       thresholds: {
-        lines: 100,
-        functions: 100,
-        branches: 100,
-        statements: 100,
+        lines: 70,
+        functions: 70,
+        branches: 55,
+        statements: 70,
       },
     },
     benchmark: {

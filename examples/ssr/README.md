@@ -19,10 +19,10 @@ Open `http://localhost:3000` (or `PORT` you set).
 |--------|------|
 | `createApp` + `defineFeature` | Typed todos state / events |
 | `asRawApp` / `.raw` | Bridge to `createServer` |
-| `@potato/ssr` | HTTP + HTML document shell |
-| `@potato/auth` | Login demo (`demo@potato.dev` / `potato`) |
-| `@potato/live` | `liveClick` + `connectLive` client |
-| WebSocket hub | `/__potato/live` — required for button clicks |
+| `potato-train-ssr` | HTTP + HTML document shell |
+| `potato-train-auth` | Login demo (`demo@potato.dev` / `potato`) |
+| `potato-train-live` | `liveClick` + `connectLive` client |
+| WebSocket hub | `/__potato/live` — `onEvent` mutates **`session.state` only** |
 | Client bundle | `/assets/client.js` |
 | Tailwind | Built at server start via `_shared/load-tailwind` |
 
@@ -45,4 +45,5 @@ src/styles.css    # Tailwind entry
 ## Notes
 
 - Tailwind CSS is compiled on boot (CLI from monorepo root tooling).
-- Full multiplayer Live WebSocket wiring is shown more completely in the [trello](../trello) example.
+- Live: never use `app.emitter` in hub handlers — see `onEvent` in `src/server.ts`.
+- Full multiplayer Live wiring is shown more completely in the [trello](../trello) example.

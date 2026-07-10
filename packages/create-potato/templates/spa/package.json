@@ -8,12 +8,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@potato/core": "^0.1.0",
-    "@potato/debug": "^0.1.0",
-    "@potato/jsx": "^0.1.0"
+    "potato-train-core": "^0.2.0",
+    "potato-train-debug": "^0.2.0",
+    "potato-train-jsx": "^0.2.0"
   },
   "devDependencies": {
-    "@potato/vite-plugin": "^0.1.0",
+    "potato-train-vite-plugin": "^0.2.0",
     "@tailwindcss/vite": "^4.1.11",
     "tailwindcss": "^4.1.11",
     "typescript": "^5.8.2",

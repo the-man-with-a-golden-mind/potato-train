@@ -1,6 +1,6 @@
 {
-  "name": "@potato/virtual",
-  "version": "0.1.0",
+  "name": "potato-train-virtual",
+  "version": "0.2.0",
   "description": "Virtual list/grid windowing for Potato (huge tables without huge DOM)",
   "type": "module",
   "main": "./dist/index.js",
@@ -17,7 +17,8 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts --clean",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --dir tests"
+    "test": "node ../../scripts/test-package.mjs",
+    "prepublishOnly": "node -e \"const fs=require('fs');if(!fs.existsSync('dist')){console.error('dist/ missing — run pnpm build first');process.exit(1)}\""
   },
   "devDependencies": {
     "tsup": "^8.4.0",
@@ -27,6 +28,7 @@
   "license": "MIT",
   "sideEffects": false,
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

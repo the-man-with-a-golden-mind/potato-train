@@ -1,9 +1,9 @@
 /**
  * SSR + Live todos — HTTP, WebSocket hub, client Live bundle.
  */
-import { createServer, logger, cors } from "@potato/ssr"
-import { createAuth, hashPassword, verifyPassword, getAuth } from "@potato/auth"
-import { createLiveHub } from "@potato/live"
+import { createServer, logger, cors } from "potato-train-ssr"
+import { createAuth, hashPassword, verifyPassword, getAuth } from "potato-train-auth"
+import { createLiveHub } from "potato-train-live"
 import { createServer as createHttpServer } from "node:http"
 import { join } from "node:path"
 import { WebSocketServer } from "ws"
@@ -68,13 +68,25 @@ const hub = createLiveHub({
     Object.assign(session.state, shared)
   },
   onEvent: (event, payload, session) => {
-    // Run feature handlers on shared session state
-    Object.assign(app.state, session.state)
-    app.emitter.emit(event, payload)
-    Object.assign(session.state, app.state)
-    const shared = hub.getShared(TOPIC)
-    shared.todos = (session.state as { todos: unknown }).todos
-    shared.draft = (session.state as { draft: string }).draft
+    // Production model: mutate session.state only (never app.state / app.emitter)
+    const s = session.state as {
+      todos: { id: number; text: string; done: boolean }[]
+      draft: string
+    }
+    if (event === "todo:toggle") {
+      const id = Number(payload)
+      s.todos = s.todos.map((t) =>
+        t.id === id ? { ...t, done: !t.done } : t,
+      )
+    } else if (event === "todo:add") {
+      const value = String(payload ?? s.draft).trim()
+      if (value) {
+        s.todos = [...s.todos, { id: Date.now(), text: value, done: false }]
+        s.draft = ""
+      }
+    } else if (event === "todo:draft") {
+      s.draft = String(payload ?? "")
+    }
   },
 })
 

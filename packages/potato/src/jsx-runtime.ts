@@ -1,1 +1,1 @@
-export * from "@potato/jsx/jsx-runtime"
+export * from "potato-train-jsx/jsx-runtime"

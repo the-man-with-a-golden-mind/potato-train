@@ -114,6 +114,13 @@ export interface PotatoOptions {
   initialState?: Partial<AppState>
   /** Enable debug event tracing. */
   debug?: boolean
+  /**
+   * Rethrow errors from event handlers after logging / `error` listeners.
+   * Default: `true` when `debug` is on or `NODE_ENV !== "production"`.
+   * Production default is `false` (log only) so one bad handler cannot
+   * take down the whole bus — set `true` for fail-fast apps.
+   */
+  throwOnHandlerError?: boolean
 }
 
 export interface PotatoApp {

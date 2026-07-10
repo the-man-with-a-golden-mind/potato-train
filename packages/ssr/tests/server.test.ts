@@ -1,8 +1,26 @@
 import { describe, expect, it } from "vitest"
-import { potato, h } from "@potato/core"
+import { potato, h } from "potato-train-core"
 import { createServer, cors, compose } from "../src/index.js"
 
 describe("createServer", () => {
+  it("isolates concurrent SSR state between requests", async () => {
+    const app = potato({ throwOnHandlerError: false })
+    app.route("/:user", (s) =>
+      h("div", null, String(s.params.user ?? "")),
+    )
+    const server = createServer({ app })
+    const [a, b] = await Promise.all([
+      server.fetch(new Request("http://x/alice")).then((r) => r.text()),
+      server.fetch(new Request("http://x/bob")).then((r) => r.text()),
+    ])
+    expect(a).toContain("alice")
+    expect(b).toContain("bob")
+    expect(a).not.toContain("bob")
+    expect(b).not.toContain("alice")
+    // shared app state routing fields remain default-ish (not last request)
+    expect(app.state.params.user).not.toBe("alice")
+  })
+
   it("serves API json", async () => {
     const app = potato()
     app.route("/", () => h("div", null, "hi"))
@@ -52,15 +70,48 @@ describe("createServer", () => {
     expect(order).toEqual(["a", "b", "h"])
   })
 
-  it("cors preflight", async () => {
+  it("cors preflight with explicit origin", async () => {
     const app = potato()
-    const server = createServer({ app, middleware: [cors()] })
+    const server = createServer({
+      app,
+      middleware: [cors({ origin: "*" })],
+    })
     server.get("/api/z", () => ({}))
     const res = await server.fetch(
       new Request("http://x/api/z", { method: "OPTIONS" }),
     )
     expect(res.status).toBe(204)
-    expect(res.headers.get("access-control-allow-origin")).toBeTruthy()
+    expect(res.headers.get("access-control-allow-origin")).toBe("*")
+  })
+
+  it("cors default does not reflect arbitrary origins", async () => {
+    const app = potato()
+    const server = createServer({ app, middleware: [cors()] })
+    server.get("/api/z", () => ({}))
+    const res = await server.fetch(
+      new Request("http://x/api/z", {
+        headers: { origin: "https://evil.example" },
+      }),
+    )
+    expect(res.headers.get("access-control-allow-origin")).toBeNull()
+  })
+
+  it("cors allowlist reflects matching origin", async () => {
+    const app = potato()
+    const server = createServer({
+      app,
+      middleware: [cors({ origin: ["https://app.example"], credentials: true })],
+    })
+    server.get("/api/z", () => ({}))
+    const res = await server.fetch(
+      new Request("http://x/api/z", {
+        headers: { origin: "https://app.example" },
+      }),
+    )
+    expect(res.headers.get("access-control-allow-origin")).toBe(
+      "https://app.example",
+    )
+    expect(res.headers.get("access-control-allow-credentials")).toBe("true")
   })
 
   it("compose helper", async () => {

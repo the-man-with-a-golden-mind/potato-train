@@ -7,7 +7,7 @@
 | **SPA** | Client-only apps (Vite) |
 | **SSR** | Pages, API routes, middleware |
 | **Live** | Phoenix LiveView-style server UI |
-| **JSX** | First-class (`@potato/jsx`) |
+| **JSX** | First-class (`potato-train-jsx`) |
 | **Auth / DB / CF** | Sessions, Drizzle, Workers — optional packages |
 
 ---
@@ -18,7 +18,7 @@
 > Refactors use **TypeScript**, not grep.
 
 ```ts
-import { createApp, defineFeature, combineState, useFeatures } from '@potato/core'
+import { createApp, defineFeature, combineState, useFeatures } from 'potato-train-core'
 
 type State = { count: number }
 type Events = { 'counter:inc': [n?: number] }
@@ -91,28 +91,28 @@ Details: [Getting started](./docs/getting-started.md#keeping-installs-lean)
 
 | Package | Role |
 |---------|------|
-| `@potato/core` | **`createApp`**, features, router, morph |
-| `@potato/jsx` | JSX runtime |
-| `@potato/html` | HTML tagged templates |
-| `@potato/ssr` | `createServer`, middleware, document shell |
-| `@potato/live` | LiveView hub + client |
-| `@potato/auth` | Sessions + password hashing |
-| `@potato/db` | Drizzle helpers (postgres / sqlite / d1) |
-| `@potato/cloudflare` | Workers + WebSocket Live |
-| `@potato/formula` | Spreadsheet formulas |
-| `@potato/virtual` | Virtual list windows |
-| `@potato/debug` | Devtools |
-| `@potato/vite-plugin` | Vite defaults for SPA |
+| `potato-train-core` | **`createApp`**, features, router, morph |
+| `potato-train-jsx` | JSX runtime |
+| `potato-train-html` | HTML tagged templates |
+| `potato-train-ssr` | `createServer`, middleware, document shell |
+| `potato-train-live` | LiveView hub + client |
+| `potato-train-auth` | Sessions + password hashing |
+| `potato-train-db` | Drizzle helpers (postgres / sqlite / d1) |
+| `potato-train-cloudflare` | Workers + WebSocket Live |
+| `potato-train-formula` | Spreadsheet formulas |
+| `potato-train-virtual` | Virtual list windows |
+| `potato-train-debug` | Devtools |
+| `potato-train-vite-plugin` | Vite defaults for SPA |
 | `create-potato` | App scaffold CLI |
 
-> Unscoped name `potato` is taken on npm — import `@potato/core` (and friends) directly.
+> Unscoped name `potato` is taken on npm — import `potato-train-core` (and friends) directly.
 
 **Release:** [docs/RELEASE.md](./docs/RELEASE.md) · `pnpm release` (needs npm + GitHub auth)
 
 ### Debugger
 
 ```ts
-import { devtools } from '@potato/debug'
+import { devtools } from 'potato-train-debug'
 app.use(devtools())
 // 🥔 floating panel · Ctrl+Shift+P
 // window.__POTATO__.history / .state / .stats
@@ -128,7 +128,7 @@ Full guide: [docs/debug.md](./docs/debug.md)
 ```ts
 // vite.config.ts
 import { defineConfig } from 'vite'
-import { potato } from '@potato/vite-plugin'
+import { potato } from 'potato-train-vite-plugin'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
@@ -148,8 +148,8 @@ Runnable: `pnpm dev:spa` → `examples/spa`
 ## SSR + API
 
 ```ts
-import { createApp, asRawApp } from '@potato/core'
-import { createServer, logger, cors } from '@potato/ssr'
+import { createApp, asRawApp } from 'potato-train-core'
+import { createServer, logger, cors } from 'potato-train-ssr'
 
 type State = { title: string }
 type Events = Record<string, never>
@@ -159,7 +159,7 @@ app.route('/', (state) => <h1>{state.title}</h1>)
 
 const server = createServer({
   app: asRawApp(app),
-  middleware: [logger(), cors()],
+  middleware: [logger(), cors({ origin: "*" })], // or an allowlist of origins
 })
 server.get('/api/health', () => ({ ok: true }))
 await server.listen(3000)

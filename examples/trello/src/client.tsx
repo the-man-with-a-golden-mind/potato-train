@@ -1,7 +1,7 @@
 /**
  * Live multiplayer client — connectLive + morph patches.
  */
-import { connectLive } from "@potato/live/client"
+import { connectLive } from "potato-train-live/client"
 
 const proto = location.protocol === "https:" ? "wss" : "ws"
 const url = `${proto}://${location.host}/__potato/live`

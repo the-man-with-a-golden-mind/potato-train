@@ -1,6 +1,6 @@
 /** @vitest-environment happy-dom */
 import { describe, expect, it, vi } from "vitest"
-import { potato, h } from "@potato/core"
+import { potato, h } from "potato-train-core"
 import { createLiveHub, encode, connectLive, liveClick } from "../src/index.js"
 
 describe("live gaps", () => {
@@ -11,6 +11,7 @@ describe("live gaps", () => {
     ;(app.state as { fn?: () => void }).fn = () => {}
     const hub = createLiveHub({
       app,
+      onEvent: () => {},
       onJoin: async (s) => {
         s.state.title = "joined"
       },

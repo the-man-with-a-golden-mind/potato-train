@@ -1,5 +1,5 @@
-import { h, Fragment as Frag } from "@potato/core"
-import type { ComponentFn, PotatoChild, Props, VNode } from "@potato/core"
+import { h, Fragment as Frag } from "potato-train-core"
+import type { ComponentFn, PotatoChild, Props, VNode } from "potato-train-core"
 
 export const Fragment = Frag
 

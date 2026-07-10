@@ -10,16 +10,20 @@ Potato is a **typed, Choo-shaped** framework. One application architecture — f
 ```text
 State   — plain serializable model (intersect feature slices)
 Events  — catalog of every intent + payload tuple
-emit    — only keys of Events, correct args
+emit    — only keys of Events, correct args (client); no-op during SSR HTML
 on      — only keys of Events, typed handlers
-view    — only emit(typed); no fetch, no set
+view    — pure UI; read state, return VNodes; no fetch/set
 ```
 
 ```text
-User intent → emit('feature:action', payload)   // typed Events
+User intent → emit('feature:action', payload)   // typed Events (client)
            → store / feature handler
            → patch(state)                       // set + render
            → view(state, emit) → morph DOM
+
+Live intent → liveClick → WS → onEvent(session)  // mutate session.state
+           → app.toString(href, session.state)     // pure render
+           → HTML patch → client morph
 ```
 
 ## One way to build apps
@@ -30,7 +34,7 @@ User intent → emit('feature:action', payload)   // typed Events
 | `defineFeature` / `defineStore<S, E>` | Untyped `on('maybe')` |
 | `patch({ … })` | Forget `emit('render')` |
 | Feature folders from day 1 | God-file stores that “we’ll split later” |
-| Views only `emit` | `fetch` / mutate in `onclick` |
+| Views pure (client: emit intents; SSR: no side effects) | `fetch` / mutate / rely on emit during SSR |
 
 `potato()` remains for **adapters** (SSR bridge, untyped interop). Application code uses **`createApp`**.
 
@@ -53,7 +57,7 @@ src/
 ```
 
 ```ts
-import { createApp, defineFeature, combineState, useFeatures } from '@potato/core'
+import { createApp, defineFeature, combineState, useFeatures } from 'potato-train-core'
 
 const counter = defineFeature<
   { count: number },
@@ -87,13 +91,14 @@ No new architectural concept.
 
 ```text
 ┌──────────────────────────────────────┐
-│  views (JSX)     emit only           │
+│  views (JSX)     pure UI             │
 ├──────────────────────────────────────┤
 │  features/*/setup  intents → patch   │
+│  Live onEvent      session.state only │
 ├──────────────────────────────────────┤
 │  domain pure libs  (formula, rules)  │
 ├──────────────────────────────────────┤
-│  @potato/core   createApp · morph    │
+│  potato-train-core   createApp · morph    │
 ├──────────────────┬───────────────────┤
 │  browser         │  ssr · live · cf  │
 └──────────────────┴───────────────────┘
@@ -103,12 +108,12 @@ No new architectural concept.
 
 | Need | Package |
 |------|---------|
-| App shell (typed) | `@potato/core` → `createApp` |
-| JSX | `@potato/jsx` |
-| HTTP/SSR | `@potato/ssr` |
-| Live patches | `@potato/live` |
-| Auth / DB / CF | `@potato/auth`, `@potato/db`, `@potato/cloudflare` |
-| Formulas / virtual lists | `@potato/formula`, `@potato/virtual` |
+| App shell (typed) | `potato-train-core` → `createApp` |
+| JSX | `potato-train-jsx` |
+| HTTP/SSR | `potato-train-ssr` |
+| Live patches | `potato-train-live` |
+| Auth / DB / CF | `potato-train-auth`, `potato-train-db`, `potato-train-cloudflare` |
+| Formulas / virtual lists | `potato-train-formula`, `potato-train-virtual` |
 
 ### Install weight
 
@@ -137,9 +142,23 @@ Potato’s product architecture is **typed Choo + features**.
 SSR serializes **HTML**, not functions. After SSR:
 
 - `onclick={() => emit(...)}` does **nothing** in the browser unless a **client** mounts Potato.
+- During `toString` / SSR / Live HTML render, **`emit` is a no-op** (views must stay pure).
 - `liveClick` only works with a **Live client + WebSocket hub**.
+- Live **`onEvent` is required** and must mutate **`session.state` only** (never `app.emitter` / `app.state`).
 
-Working patterns live under `examples/` (see `examples/README.md`).
+Working patterns live under `examples/` (see `examples/README.md`).  
+Full guide: [Interactivity](./interactivity.md).
+
+## Request isolation (SSR)
+
+- Each HTTP request gets an **isolated state snapshot** (`isolateState`).
+- Do not treat `app.state` as per-request memory.
+- Page loaders patch `ctx.state`; rehydration uses request-local state only.
+
+## CORS
+
+`cors()` defaults to **same-origin only** (does not reflect arbitrary `Origin`).  
+Cross-origin APIs need an explicit allowlist: `cors({ origin: ['https://app.example'] })` or `cors({ origin: '*' })` for public APIs without credentials.
 
 ## Success metrics
 

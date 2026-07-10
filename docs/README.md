@@ -11,15 +11,16 @@ Start here if you are new:
 | Guide | Description |
 |-------|-------------|
 | [Getting started](./getting-started.md) | Monorepo install, lean deps, first apps, Tailwind |
-| [Install from npm](./install-npm.md) | Scaffold / `pnpm add @potato/*` for real apps |
+| [Install from npm](./install-npm.md) | Scaffold / `pnpm add potato-train-*` for real apps |
 | [Architecture](./architecture.md) | Type spine: State + Events + features |
 | [Interactivity](./interactivity.md) | SPA · client bundle · Live + WebSocket |
-| [Troubleshooting](./troubleshooting.md) | Dead buttons, ports, install, TS, Live |
+| [Troubleshooting](./troubleshooting.md) | Dead buttons, ports, install, TS, Live, CORS |
 | [Debugger](./debug.md) | Timeline, state diffs, panel, `__POTATO__` |
 | [API reference](./api.md) | Core, SSR, Live, Auth, DB, Formula |
+| [Testing](./testing.md) | Vitest, honest coverage, e2e |
 | [Performance](./performance.md) | Benchmarks & virtual lists |
 | [Tutorial: Spreadsheet](./tutorials/spreadsheet.md) | Virtual grid + formulas |
-| [Tutorial: Trello](./tutorials/trello.md) | Boards + Live pattern |
+| [Tutorial: Trello](./tutorials/trello.md) | Boards + Live session state |
 | [TEA notes](./architecture-tea.md) | Advanced only — **not** the product path |
 | [Release](./RELEASE.md) | How to publish packages |
 | [Changelog](../CHANGELOG.md) | What shipped |
@@ -31,7 +32,8 @@ Root **[AGENTS.md](../AGENTS.md)** is the short law for humans and AI:
 
 - `createApp` only for apps  
 - `defineFeature` + `patch`  
-- Views only `emit`  
+- Views pure (client emit / SSR emit no-op)  
+- Live: `onEvent` → `session.state` only  
 - Refactors via `tsc`
 
 ## Examples

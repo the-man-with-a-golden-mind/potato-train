@@ -1,1 +1,1 @@
-export * from "@potato/live"
+export * from "potato-train-live"

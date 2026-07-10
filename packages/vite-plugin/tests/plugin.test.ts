@@ -6,7 +6,7 @@ describe("vite plugin", () => {
     const plugin = potato()
     const conf = (plugin as { config: () => unknown }).config()
     expect(conf).toMatchObject({
-      esbuild: { jsx: "automatic", jsxImportSource: "@potato/jsx" },
+      esbuild: { jsx: "automatic", jsxImportSource: "potato-train-jsx" },
     })
   })
 

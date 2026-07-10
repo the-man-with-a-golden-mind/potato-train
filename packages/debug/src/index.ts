@@ -1,15 +1,15 @@
 /**
- * @potato/debug — event timeline, state diffs, render timing, floating panel.
+ * potato-train-debug — event timeline, state diffs, render timing, floating panel.
  *
  * @example
  * ```ts
- * import { devtools } from '@potato/debug'
+ * import { devtools } from 'potato-train-debug'
  * app.use(devtools()) // or devtools({ panel: true, log: true })
  * // window.__POTATO__ · Ctrl+Shift+P
  * ```
  */
-import type { AppState, PotatoApp, Store } from "@potato/core"
-import { EVENTS } from "@potato/core"
+import type { AppState, PotatoApp, Store } from "potato-train-core"
+import { EVENTS } from "potato-train-core"
 import { diffState, formatDiff, snapshotState, type DiffEntry } from "./diff.js"
 import { classifyEvent, createPanel, type PanelApi, type PanelRecord } from "./panel.js"
 

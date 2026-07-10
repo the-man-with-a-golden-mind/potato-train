@@ -1,6 +1,6 @@
 {
-  "name": "@potato/ssr",
-  "version": "0.1.0",
+  "name": "potato-train-ssr",
+  "version": "0.2.0",
   "description": "Potato SSR — middleware, API routes, document shell (Next-style)",
   "type": "module",
   "main": "./dist/index.js",
@@ -17,10 +17,11 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts --clean",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --dir tests"
+    "test": "node ../../scripts/test-package.mjs",
+    "prepublishOnly": "node -e \"const fs=require('fs');if(!fs.existsSync('dist')){console.error('dist/ missing — run pnpm build first');process.exit(1)}\""
   },
   "dependencies": {
-    "@potato/core": "workspace:*",
+    "potato-train-core": "workspace:*",
     "effect": "^3.14.0"
   },
   "devDependencies": {
@@ -31,6 +32,7 @@
   "license": "MIT",
   "sideEffects": false,
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

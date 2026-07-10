@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest"
 import { Effect } from "effect"
-import { potato, h } from "@potato/core"
+import { potato, h } from "potato-train-core"
 import {
   createServer,
   createContext,

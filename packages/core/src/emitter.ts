@@ -1,10 +1,27 @@
 import type { Emitter, EmitterListener } from "./types.js"
 
+export type EmitterOptions = {
+  /** Log every emit to `trace` listeners. */
+  debug?: boolean
+  /**
+   * After routing a handler error to `error` listeners / console, rethrow it.
+   * Fail-fast in dev; production should usually leave this false unless you
+   * want a single bad handler to surface immediately.
+   */
+  throwOnError?: boolean
+}
+
 /**
  * Tiny typed event bus (nanobus-inspired).
  * Functional-friendly, zero deps.
  */
-export function createEmitter(debug = false): Emitter {
+export function createEmitter(
+  debugOrOpts: boolean | EmitterOptions = false,
+): Emitter {
+  const opts: EmitterOptions =
+    typeof debugOrOpts === "boolean" ? { debug: debugOrOpts } : debugOrOpts
+  const debug = opts.debug === true
+  const throwOnError = opts.throwOnError === true
   const map = new Map<string, Set<EmitterListener>>()
 
   const on = (event: string, listener: EmitterListener): void => {
@@ -44,17 +61,28 @@ export function createEmitter(debug = false): Emitter {
     }
     const set = map.get(event)
     if (!set) return
+    let firstError: unknown
     for (const fn of [...set]) {
       try {
         fn(...args)
       } catch (err) {
+        if (firstError === undefined) firstError = err
         const errors = map.get("error")
         if (errors && errors.size > 0) {
-          for (const handler of errors) handler(err, event)
+          for (const handler of errors) {
+            try {
+              handler(err, event)
+            } catch {
+              /* never let error handlers crash the bus loop */
+            }
+          }
         } else if (typeof console !== "undefined") {
           console.error(`[potato] error in '${event}':`, err)
         }
       }
+    }
+    if (throwOnError && firstError !== undefined) {
+      throw firstError
     }
   }
 

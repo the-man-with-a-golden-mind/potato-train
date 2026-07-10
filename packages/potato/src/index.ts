@@ -16,7 +16,7 @@ export {
   EVENTS,
   createEmitter,
   renderToString,
-} from "@potato/core"
+} from "potato-train-core"
 
 export type {
   PotatoApp,
@@ -40,4 +40,4 @@ export type {
   CombineFeatureStates,
   CombineFeatureEvents,
   PrefixEvents,
-} from "@potato/core"
+} from "potato-train-core"

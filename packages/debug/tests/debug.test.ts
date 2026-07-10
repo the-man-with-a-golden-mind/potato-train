@@ -1,6 +1,6 @@
 /** @vitest-environment happy-dom */
 import { describe, expect, it, vi } from "vitest"
-import { potato, h, defineStore } from "@potato/core"
+import { potato, h, defineStore } from "potato-train-core"
 import {
   devtools,
   attachDebug,

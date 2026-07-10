@@ -20,8 +20,8 @@ Open **http://localhost:3030** in **two windows** to see Live updates.
 | Piece | Role |
 |--------|------|
 | `createApp` + `defineFeature` | Board state + typed events |
-| `@potato/live` | `liveClick` / `liveSubmit` + `connectLive` client |
-| Live hub + WebSocket | Shared board; morph HTML patches |
+| `potato-train-live` | `liveClick` / `liveSubmit` + `connectLive` client |
+| Live hub + WebSocket | `onEvent` + `session.state` + topic `sharedState`; morph HTML patches |
 | Client bundle | `/assets/client.js` (required for buttons) |
 | Tailwind | Board UI |
 

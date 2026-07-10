@@ -1,8 +1,8 @@
 /**
  * Multiplayer Trello — HTTP + WebSocket Live hub + client bundle.
  */
-import { createServer, logger } from "@potato/ssr"
-import { createLiveHub } from "@potato/live"
+import { createServer, logger } from "potato-train-ssr"
+import { createLiveHub } from "potato-train-live"
 import { createServer as createHttpServer } from "node:http"
 import { join } from "node:path"
 import { WebSocketServer } from "ws"
@@ -62,8 +62,7 @@ const hub = createLiveHub({
     shared.board = snapshot()
     session.state.board = shared.board as never
     session.state.peers = shared.peers as never
-    // Keep app.state in sync for renderHtml
-    Object.assign(app.state, session.state)
+    // Render uses session.state via app.toString(href, session.state) — not app.state
   },
 })
 

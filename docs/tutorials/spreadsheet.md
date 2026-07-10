@@ -49,10 +49,10 @@ examples/spreadsheet/src/
 
 | Package | Role |
 |---------|------|
-| `@potato/formula` | `=SUM(A1:A3)`, `IF`, refs, dirty graph |
-| `@potato/virtual` | `computeWindow` for scroll windows |
-| `@potato/core` | `createApp`, `defineFeature`, morph |
-| `@potato/jsx` | JSX → VNodes |
+| `potato-train-formula` | `=SUM(A1:A3)`, `IF`, refs, dirty graph |
+| `potato-train-virtual` | `computeWindow` for scroll windows |
+| `potato-train-core` | `createApp`, `defineFeature`, morph |
+| `potato-train-jsx` | JSX → VNodes |
 
 ## API surface
 
@@ -102,13 +102,14 @@ This example follows the **product type spine**:
 
 - `SheetState` + `SheetEvents` — every intent is typed (`createApp`)
 - `defineFeature` in `sheet/feature.ts` — handlers use `patch` / `set`
-- View only `emit`s (see `sheet/view.tsx`)
-- Server domain (`sheet-store.ts` + `@potato/formula`) stays pure of UI
+- View is pure UI — client `emit`s intents (see `sheet/view.tsx`); no I/O in the view
+- Server domain (`sheet-store.ts` + `potato-train-formula`) stays pure of UI
+- Clicks work via **client bundle** (`client.js` mounts Potato), not bare SSR handlers
 
 Rename `sheet:edit-start` in `SheetEvents` → TypeScript lists every call site. No grep.
 
 ## Stretch goals
 
-- WebSocket live co-editing (`@potato/live`)
+- WebSocket live co-editing (`potato-train-live`): `onEvent` mutates **`session.state` only** + `sharedState` for multiplayer (see [trello tutorial](./trello.md) and [interactivity](../interactivity.md))
 - Persist raw cells in D1 / Postgres
 - Virtual columns (horizontal windowing)

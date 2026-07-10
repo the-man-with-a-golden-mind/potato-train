@@ -21,22 +21,27 @@ describe("defineStore typed initial state", () => {
     expect((app.state as { count: number }).count).toBe(1)
   })
 
-  it("update() mutates draft", () => {
-    const app = potato()
+  it("update() mutates draft and emits render", () => {
+    const app = potato({ throwOnHandlerError: false })
+    let renders = 0
+    app.emitter.on("render", () => {
+      renders++
+    })
     app.use(
-      defineStore("bag", { items: [] as string[] }, ({ update, on, emit }) => {
+      defineStore("bag", { items: [] as string[] }, ({ update, on }) => {
         on("add", (x) => {
           update((s) => {
             s.items.push(String(x))
           })
-          emit("render")
         })
       }),
     )
     app.route("/", () => h("div", null, "x"))
     app.toString("/") // run stores
+    const before = renders
     app.emitter.emit("add", "a")
     expect((app.state as { items: string[] }).items).toEqual(["a"])
+    expect(renders).toBeGreaterThan(before)
   })
 
   it("patch() sets state and emits render", () => {

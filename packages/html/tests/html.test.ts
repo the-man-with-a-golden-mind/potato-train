@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { html, raw, h } from "../src/index.js"
-import { renderToString } from "@potato/core"
+import { renderToString } from "potato-train-core"
 
 describe("html tagged template", () => {
   it("parses simple element", () => {

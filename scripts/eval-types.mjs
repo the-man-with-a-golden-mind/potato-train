@@ -24,7 +24,7 @@ for (const task of tasks) {
     compilerOptions: {
       noEmit: true,
       paths: {
-        "@potato/core": ["../../packages/core/src/index.ts"],
+        "potato-train-core": ["../../packages/core/src/index.ts"],
       },
       baseUrl: ".",
     },
@@ -43,7 +43,7 @@ for (const task of tasks) {
           noEmit: true,
           skipLibCheck: true,
           paths: {
-            "@potato/core": [resolve(root, "packages/core/src/index.ts")],
+            "potato-train-core": [resolve(root, "packages/core/src/index.ts")],
           },
           baseUrl: ".",
         },

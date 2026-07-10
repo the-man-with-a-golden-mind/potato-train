@@ -9,3 +9,6 @@ packages:
   # Cloudflare example is OPTIONAL — wrangler/workerd ~150MB+.
   # Install separately: cd examples/cloudflare && pnpm install
   # - 'examples/cloudflare'
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true

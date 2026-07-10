@@ -1,5 +1,5 @@
-import type { PotatoServer } from "@potato/ssr"
-import { createLiveHub, type LiveHub, type LiveHubOptions } from "@potato/live"
+import type { PotatoServer } from "potato-train-ssr"
+import { createLiveHub, type LiveHub, type LiveHubOptions } from "potato-train-live"
 
 export interface CloudflareEnv {
   [key: string]: unknown
@@ -14,7 +14,7 @@ export interface WorkerOptions {
 /**
  * Create a Cloudflare Workers export:
  * ```ts
- * export default potatoWorker({ server, live: { app } })
+ * export default potatoWorker({ server, live: { app, onEvent: (e, p, s) => { … } } })
  * ```
  */
 export function potatoWorker(opts: WorkerOptions) {

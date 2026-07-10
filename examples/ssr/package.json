@@ -1,5 +1,5 @@
 {
-  "name": "@potato/example-ssr",
+  "name": "potato-train-example-ssr",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -9,11 +9,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@potato/auth": "workspace:*",
-    "@potato/core": "workspace:*",
-    "@potato/jsx": "workspace:*",
-    "@potato/live": "workspace:*",
-    "@potato/ssr": "workspace:*",
+    "potato-train-auth": "workspace:*",
+    "potato-train-core": "workspace:*",
+    "potato-train-jsx": "workspace:*",
+    "potato-train-live": "workspace:*",
+    "potato-train-ssr": "workspace:*",
     "ws": "^8.18.1"
   },
   "devDependencies": {

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, beforeEach } from "vitest"
-import { potato, h } from "@potato/core"
-import { createServer } from "@potato/ssr"
+import { potato, h } from "potato-train-core"
+import { createServer } from "potato-train-ssr"
 import { potatoWorker, serveAssets } from "../src/index.js"
 
 describe("serveAssets", () => {
@@ -61,7 +61,7 @@ describe("potatoWorker", () => {
     const server = createServer({ app })
     const worker = potatoWorker({
       server,
-      live: { app, path: "/__potato/live" },
+      live: { app, path: "/__potato/live", onEvent: () => {} },
     })
     // Ensure Upgrade header is visible (some fetch impls are picky)
     const headers = new Headers()

@@ -1,9 +1,9 @@
 {
-  "name": "@potato/example-cloudflare",
+  "name": "potato-train-example-cloudflare",
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Optional example — not in default workspace (wrangler is heavy). From monorepo root: pnpm --filter @potato/example-cloudflare… only after linking; or cd here && pnpm install",
+  "description": "Optional example — not in default workspace (wrangler is heavy). From monorepo root: pnpm --filter potato-train-example-cloudflare… only after linking; or cd here && pnpm install",
   "scripts": {
     "css": "node scripts/build-css.mjs",
     "dev": "pnpm css && wrangler dev src/worker.tsx",
@@ -11,12 +11,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@potato/cloudflare": "workspace:*",
-    "@potato/core": "workspace:*",
-    "@potato/db": "workspace:*",
-    "@potato/jsx": "workspace:*",
-    "@potato/live": "workspace:*",
-    "@potato/ssr": "workspace:*",
+    "potato-train-cloudflare": "workspace:*",
+    "potato-train-core": "workspace:*",
+    "potato-train-db": "workspace:*",
+    "potato-train-jsx": "workspace:*",
+    "potato-train-live": "workspace:*",
+    "potato-train-ssr": "workspace:*",
     "drizzle-orm": "^0.40.0"
   },
   "devDependencies": {

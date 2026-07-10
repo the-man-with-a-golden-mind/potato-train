@@ -1,4 +1,4 @@
-import { createApp, h } from "@potato/core"
+import { createApp, h } from "potato-train-core"
 
 export function createUserApp() {
   const app = createApp()

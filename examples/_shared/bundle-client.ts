@@ -44,20 +44,20 @@ export async function bundleClient(opts: BundleClientOptions): Promise<string> {
     ...Object.fromEntries(
       pkgs.flatMap((name) => {
         const entries: [string, string][] = [
-          [`@potato/${name}`, aliasPkg(name)],
+          [`potato-train-${name}`, aliasPkg(name)],
         ]
         if (name === "jsx") {
           entries.push(
-            ["@potato/jsx/jsx-runtime", aliasPkg("jsx", "src/jsx-runtime.ts")],
+            ["potato-train-jsx/jsx-runtime", aliasPkg("jsx", "src/jsx-runtime.ts")],
             [
-              "@potato/jsx/jsx-dev-runtime",
+              "potato-train-jsx/jsx-dev-runtime",
               aliasPkg("jsx", "src/jsx-dev-runtime.ts"),
             ],
           )
         }
         if (name === "live") {
           entries.push([
-            "@potato/live/client",
+            "potato-train-live/client",
             join(monorepo, "packages/live/src/client.ts"),
           ])
         }
@@ -80,7 +80,7 @@ export async function bundleClient(opts: BundleClientOptions): Promise<string> {
     ...(useJsx
       ? {
           jsx: "automatic" as const,
-          jsxImportSource: "@potato/jsx",
+          jsxImportSource: "potato-train-jsx",
         }
       : {}),
     alias,

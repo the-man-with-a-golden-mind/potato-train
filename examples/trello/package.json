@@ -1,5 +1,5 @@
 {
-  "name": "@potato/example-trello",
+  "name": "potato-train-example-trello",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -8,11 +8,11 @@
     "start": "tsx --tsconfig tsconfig.json src/server.ts"
   },
   "dependencies": {
-    "@potato/core": "workspace:*",
-    "@potato/live": "workspace:*",
-    "@potato/ssr": "workspace:*",
+    "potato-train-core": "workspace:*",
+    "potato-train-live": "workspace:*",
+    "potato-train-ssr": "workspace:*",
     "ws": "^8.18.1",
-    "@potato/jsx": "workspace:*"
+    "potato-train-jsx": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.13.10",

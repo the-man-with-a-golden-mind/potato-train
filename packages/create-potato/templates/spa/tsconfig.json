@@ -5,7 +5,7 @@
     "moduleResolution": "Bundler",
     "strict": true,
     "jsx": "react-jsx",
-    "jsxImportSource": "@potato/jsx",
+    "jsxImportSource": "potato-train-jsx",
     "types": ["vite/client"]
   },
   "include": ["src"]

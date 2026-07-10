@@ -1,5 +1,5 @@
 {
-  "name": "@potato/example-spa",
+  "name": "potato-train-example-spa",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -9,12 +9,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@potato/core": "workspace:*",
-    "@potato/debug": "workspace:*",
-    "@potato/jsx": "workspace:*"
+    "potato-train-core": "workspace:*",
+    "potato-train-debug": "workspace:*",
+    "potato-train-jsx": "workspace:*"
   },
   "devDependencies": {
-    "@potato/vite-plugin": "workspace:*",
+    "potato-train-vite-plugin": "workspace:*",
     "@tailwindcss/vite": "^4.1.11",
     "tailwindcss": "^4.1.11",
     "typescript": "^5.8.2",

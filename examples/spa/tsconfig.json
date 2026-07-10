@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "@potato/jsx",
+    "jsxImportSource": "potato-train-jsx",
     "types": ["vite/client"],
     "noEmit": true
   },

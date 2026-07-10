@@ -1,4 +1,4 @@
-import type { Middleware, PotatoContext } from "@potato/ssr"
+import type { Middleware, PotatoContext } from "potato-train-ssr"
 import { Effect } from "effect"
 
 export interface AuthUser {

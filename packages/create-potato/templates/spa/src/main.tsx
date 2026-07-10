@@ -8,8 +8,8 @@ import {
   defineFeature,
   combineState,
   useFeatures,
-} from "@potato/core"
-import { devtools } from "@potato/debug"
+} from "potato-train-core"
+import { devtools } from "potato-train-debug"
 
 type State = { count: number }
 type Events = {

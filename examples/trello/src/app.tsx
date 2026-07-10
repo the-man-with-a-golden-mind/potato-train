@@ -5,8 +5,8 @@ import {
   createApp as createTypedApp,
   defineFeature,
   combineState,
-} from "@potato/core"
-import { liveClick, liveSubmit } from "@potato/live"
+} from "potato-train-core"
+import { liveClick, liveSubmit } from "potato-train-live"
 import { getBoard, type Board } from "./board.js"
 
 export type State = {

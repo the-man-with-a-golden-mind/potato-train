@@ -96,7 +96,7 @@ Clicks go to the server over WebSocket; the server returns HTML **patches** (mor
 Use data attributes, not function handlers:
 
 ```ts
-import { liveClick, liveSubmit } from '@potato/live'
+import { liveClick, liveSubmit } from 'potato-train-live'
 
 <button type="button" {...liveClick('todo:toggle', id)}>
   Toggle
@@ -112,9 +112,26 @@ Event names must match your typed `Events` / hub `onEvent`.
 
 ### Server
 
-1. `createLiveHub({ app, onEvent, sharedState?, broadcast? })`
-2. WebSocket upgrade on `/__potato/live` (Node: `ws` + `http` upgrade; CF: `potatoWorker({ live })`)
-3. On event: update domain/state, then hub pushes `ok` / `patch` HTML
+1. `createLiveHub({ app, onEvent, sharedState?, broadcast? })` — **`onEvent` is required**
+2. WebSocket upgrade on `/__potato/live` (Node: `ws` + `http` upgrade; CF: `potatoWorker({ live: { app, onEvent } })`)
+3. In `onEvent`: mutate **`session.state` only** (and topic `sharedState`); hub pushes `ok` / `patch` HTML via pure `app.toString(href, session.state)`
+
+```ts
+// ✅ Production Live model
+createLiveHub({
+  app,
+  sharedState: () => ({ count: 0 }),
+  onEvent: (event, payload, session) => {
+    const s = session.state as { count: number }
+    if (event === 'inc') s.count += 1
+    // multiplayer fields are written back via hub shared state
+  },
+})
+
+// ❌ Do not use global app bus for Live
+// Object.assign(app.state, session.state)
+// app.emitter.emit(event, payload)
+```
 
 ### Browser
 
@@ -122,7 +139,7 @@ Something must **join** the socket and morph `#app`:
 
 ```ts
 // bundled client
-import { connectLive } from '@potato/live/client'
+import { connectLive } from 'potato-train-live/client'
 
 connectLive({
   url: `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/__potato/live`,
@@ -143,14 +160,29 @@ import { liveBootScript } from '../_shared/live-boot.js'
 ### Full Live stack (checklist)
 
 - [ ] View uses `liveClick` / `liveSubmit` (not bare `onclick`)
-- [ ] Hub `onEvent` updates state / domain
+- [ ] Hub **`onEvent` mutates `session.state` only** (never `app.emitter` / `app.state`)
+- [ ] Multiplayer uses `sharedState` + topic name
 - [ ] WebSocket server accepts `/__potato/live`
 - [ ] Browser runs `connectLive` or live-boot
 - [ ] Topic names match on client and server
 
 ---
 
-## 4. What does **not** work
+## 4. Pure views (SSR / Live HTML)
+
+During `app.toString` / SSR / Live HTML render, **`emit` is a no-op** (never hits the global emitter). Views must only read `state` and return VNodes.
+
+| Context | What `emit` does |
+|---------|------------------|
+| Client after `app.mount` | Real bus — SPA handlers work |
+| `toString` / SSR / Live patch HTML | **No-op** — pure render |
+| Live clicks | `onEvent` on the server (not view `emit`) |
+
+Side effects belong in: feature `setup` / stores, page loaders, Live `onEvent`, or client-mounted handlers.
+
+---
+
+## 5. What does **not** work
 
 ```ts
 // SSR-only page, no clientEntry, no Live

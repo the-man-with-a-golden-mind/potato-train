@@ -1,4 +1,5 @@
-import type { AppState, PotatoApp } from "@potato/core"
+import type { AppState, PotatoApp } from "potato-train-core"
+import { isolateState } from "potato-train-core"
 
 export type HttpMethod =
   | "GET"
@@ -38,9 +39,12 @@ export interface PotatoContext {
     set(name: string, value: string, opts?: CookieOptions): void
     delete(name: string): void
   }
-  /** Application instance */
+  /** Application instance (shared process-wide — do not mutate `.state` for request data) */
   app: PotatoApp
-  /** Clone state for this render */
+  /**
+   * **Request-local** state snapshot for this render/API call.
+   * Isolated from `app.state` so concurrent requests cannot leak data.
+   */
   state: AppState
   /** Platform env (Cloudflare env, process.env, etc.) */
   env: Record<string, unknown>
@@ -92,7 +96,12 @@ export function createContext(
     query[k] = v
   })
 
-  const state = { ...app.state, params, query, href: url.pathname }
+  // Deep-ish isolated snapshot — never share nested objects with app.state
+  const state = isolateState(app.state, {
+    params: { ...params },
+    query: { ...query },
+    href: url.pathname,
+  })
 
   const applyInit = (init?: number | ResponseInit): ResponseInit => {
     if (typeof init === "number") {
@@ -102,7 +111,7 @@ export function createContext(
     if (init?.headers) {
       new Headers(init.headers).forEach((v, k) => h.set(k, v))
     }
-      for (const c of setCookies) {
+    for (const c of setCookies) {
       // undici: multiple Set-Cookie via append; some runtimes hide from .get()
       h.append("set-cookie", c)
     }

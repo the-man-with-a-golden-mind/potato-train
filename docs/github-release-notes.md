@@ -1,11 +1,14 @@
-# Potato v0.1.0
+# Potato v0.2.0
 
-First public release of **Potato** — a typed, Choo-shaped TypeScript framework.
+Safety-focused release of **Potato** — a typed, Choo-shaped TypeScript framework.
 
 ## Highlights
 
 - **One app architecture:** `createApp<State, Events>` + `defineFeature` + `patch`
-- Views only **`emit`**; refactors use **TypeScript**, not grep
+- **Pure views**; client **`emit`s intents**; Live **`onEvent(session.state)`** only
+- Isolated SSR state; request-local context; CORS same-origin by default
+- Safer Live session rendering with serialized fallback event handling
+- `store.update()` now renders; DOM morph clears removed object styles
 - Optional **SSR**, **Live** (WebSocket morph), **auth**, **Drizzle DB**, **Cloudflare Workers**
 - **create-potato** scaffold (`spa` / `ssr`)
 - Working demos: SPA, SSR+Live, spreadsheet (50k rows), portfolio, Trello multiplayer
@@ -15,25 +18,25 @@ First public release of **Potato** — a typed, Choo-shaped TypeScript framework
 ```bash
 pnpm create potato my-app
 # or
-pnpm add @potato/core @potato/jsx
+pnpm add potato-train-core potato-train-jsx
 ```
 
 ```ts
-import { createApp, defineFeature, combineState, useFeatures } from '@potato/core'
+import { createApp, defineFeature, combineState, useFeatures } from 'potato-train-core'
 ```
 
 ## Packages published
 
-`@potato/core` · `jsx` · `html` · `ssr` · `live` · `auth` · `db` · `cloudflare` · `formula` · `virtual` · `debug` · `vite-plugin` · `create-potato`
+`potato-train-core` · `potato-train-jsx` · `html` · `ssr` · `live` · `auth` · `db` · `cloudflare` · `formula` · `virtual` · `debug` · `vite-plugin` · `create-potato`
 
-> The unscoped name `potato` is already taken on npm. Use `@potato/*` packages.
+> The unscoped name `potato` is already taken on npm. Use **`potato-train-*`** packages.
 
 ## Docs
 
-- [Architecture](https://github.com/OWNER/REPO/blob/v0.1.0/docs/architecture.md)
-- [Getting started](https://github.com/OWNER/REPO/blob/v0.1.0/docs/getting-started.md)
-- [Interactivity](https://github.com/OWNER/REPO/blob/v0.1.0/docs/interactivity.md)
-- [CHANGELOG](https://github.com/OWNER/REPO/blob/v0.1.0/CHANGELOG.md)
+- [Architecture](https://github.com/OWNER/REPO/blob/v0.2.0/docs/architecture.md)
+- [Getting started](https://github.com/OWNER/REPO/blob/v0.2.0/docs/getting-started.md)
+- [Interactivity](https://github.com/OWNER/REPO/blob/v0.2.0/docs/interactivity.md)
+- [CHANGELOG](https://github.com/OWNER/REPO/blob/v0.2.0/CHANGELOG.md)
 - Agents: `AGENTS.md` · `llms.txt`
 
 ## Full changelog

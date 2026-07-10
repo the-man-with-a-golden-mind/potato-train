@@ -1,5 +1,5 @@
 {
-  "name": "@potato/example-portfolio",
+  "name": "potato-train-example-portfolio",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -8,10 +8,10 @@
     "start": "tsx --tsconfig tsconfig.json src/server.ts"
   },
   "dependencies": {
-    "@potato/core": "workspace:*",
-    "@potato/ssr": "workspace:*",
-    "@potato/auth": "workspace:*",
-    "@potato/jsx": "workspace:*"
+    "potato-train-core": "workspace:*",
+    "potato-train-ssr": "workspace:*",
+    "potato-train-auth": "workspace:*",
+    "potato-train-jsx": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.13.10",

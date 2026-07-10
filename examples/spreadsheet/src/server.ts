@@ -1,4 +1,4 @@
-import { createServer, logger, cors, documentHtml } from "@potato/ssr"
+import { createServer, logger, cors, documentHtml } from "potato-train-ssr"
 import { join } from "node:path"
 import {
   bundleClient,
@@ -29,7 +29,7 @@ await bundleClient({
   packages: ["core", "jsx", "virtual", "formula"],
 })
 
-const { potato } = await import("@potato/core")
+const { potato } = await import("potato-train-core")
 const shellApp = potato()
 shellApp.route("/", () => ({
   type: "div",

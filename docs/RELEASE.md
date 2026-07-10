@@ -1,77 +1,88 @@
 # Release guide (npm + GitHub)
 
-Ship Potato **0.1.0** with the release script.
+Ship Potato **0.2.0** with the release script.
 
 ## Prerequisites
 
 | Tool | Why |
 |------|-----|
-| Node 20+ | Runtime |
-| **npm login** (or `NPM_TOKEN`) | Publish to registry.npmjs.org |
-| Built `packages/*/dist` | Publish tarballs need built output |
+| Node **20+** (22.13+ or 24 for current pnpm) | Runtime |
+| **NPM_TOKEN** (recommended) or `npm login` + OTP | Publish to registry.npmjs.org |
+| Built `packages/*/dist` | Release script builds automatically |
 | **git** + **origin** remote | Tag and push |
-| **GitHub CLI** (`gh`) | Create GitHub Release (optional if you use the UI) |
+| **GitHub CLI** (`gh`) | Create GitHub Release (optional) |
+
+### Auth (required — account has 2FA on writes)
+
+Your npm profile is **auth-and-writes**. A normal `npm login` token **cannot** publish without a fresh 6-digit OTP every time.
+
+**Permanent fix — Automation / bypass-2FA token:**
+
+1. Open [npm Access Tokens](https://www.npmjs.com/settings/~/tokens)
+2. **Generate New Token** → **Granular Access Token**
+3. Token name: `potato-train-publish`
+4. Expiration: 90 days (or custom)
+5. Permissions: **Read and write**
+6. Enable **Bypass two-factor authentication**
+7. Packages: allow publish (or “All packages” if available)
+8. Generate and copy `npm_…`
 
 ```bash
-npm whoami          # must print your npm username
-gh auth status      # must be logged in for gh release
+export NPM_TOKEN=npm_xxxxxxxxxxxxxxxx
+cd /path/to/potato-train
+node scripts/release.mjs npm
 ```
 
-### Important: do not publish private packages
+**One-shot with authenticator (expires ~30s):**
 
-| Path | Why `EPRIVATE` |
-|------|----------------|
+```bash
+NPM_OTP=123456 node scripts/release.mjs npm
+```
+
+### Do not publish these
+
+| Path | Why |
+|------|-----|
 | Repo root (`potato-train`) | `"private": true` monorepo |
 | `packages/potato` | `"private": true` — unscoped name `potato` is **taken on npm** |
 
-Publish **`@potato/*`** and **`create-potato`** only. Consumers install those — not unscoped `potato`.
+Publish **`potato-train-*`** and **`create-potato`** only.
 
-## Publish with npm only (no pnpm)
+## Publish (recommended)
 
 ```bash
+nvm use 24   # or Node ≥ 22.13
 cd potato-train
-npm login
-
-# Ensure packages are built first (however you build: pnpm/bun/npx tsup)
-# then:
+pnpm install
 
 # Dry-run
 DRY_RUN=1 node scripts/release.mjs npm
 
-# Real publish (uses `npm publish --access public` in each package dir;
-# rewrites workspace:* → ^0.1.0 for the registry)
+# Real publish (builds dist, rewrites workspace:* → ^0.2.0, npm publish each package)
+export NPM_TOKEN=npm_...   # automation token
 node scripts/release.mjs npm
 ```
 
-Or one package by hand (from that package directory, after rewriting workspace deps if any):
+Or:
+
+```bash
+pnpm release:npm
+```
+
+### One package by hand
 
 ```bash
 cd packages/core
-npm publish --access public
+# workspace deps must be rewritten — prefer release.mjs instead
+npm publish --access public --otp=123456
 ```
 
-**Do not** run `npm publish` from the monorepo root or from `packages/potato` — that is the `EPRIVATE` error.
+**Do not** run `npm publish` from the monorepo root or from `packages/potato`.
 
-## One-shot with monorepo scripts (optional; needs pnpm for install/build)
-
-```bash
-cd potato-train
-pnpm install
-
-# Full: tests + e2e + npm publish + git tag + GitHub release
-pnpm release
-
-# Or step by step:
-pnpm release:preflight
-DRY_RUN=1 pnpm release:npm   # still publishes via npm under the hood
-pnpm release:npm
-pnpm release:github
-```
-
-## Publish order (handled by the script)
+## Publish order
 
 ```text
-@potato/core
+potato-train-core
   → jsx, html, virtual, formula, debug, vite-plugin
   → ssr → live, auth, db → cloudflare
 create-potato
@@ -79,72 +90,34 @@ create-potato
 
 (`potato` meta package is skipped — private.)
 
-## First-time git / GitHub setup
-
-This repo may start without `.git`. The script can init:
+## Full monorepo release
 
 ```bash
-node scripts/release.mjs init-git
-
-# Create empty repo on GitHub, then:
-git remote add origin git@github.com:YOUR_USER/potato-train.git
-git branch -M main
-git push -u origin main
-
-# Install gh: https://cli.github.com/
-gh auth login
-```
-
-Then:
-
-```bash
+pnpm release              # preflight + npm + github
+# or
+SKIP_E2E=1 pnpm release:preflight
+pnpm release:npm
 pnpm release:github
-```
-
-Or create the release in the GitHub UI from tag `v0.1.0` using notes in `docs/github-release-notes.md`.
-
-## After npm publish — set repository fields
-
-Once the GitHub URL is final, add to each public package (optional but nice):
-
-```json
-"repository": {
-  "type": "git",
-  "url": "https://github.com/YOUR_USER/potato-train.git",
-  "directory": "packages/core"
-}
-```
-
-Script helper after remote exists:
-
-```bash
-# optional: node scripts/set-repo-urls.mjs https://github.com/YOU/potato-train
 ```
 
 ## Verify
 
 ```bash
-npm view @potato/core version
+npm view potato-train-core version
 npm view create-potato version
 pnpm create potato /tmp/potato-smoke
 ```
-
-## Not published
-
-| Item | Why |
-|------|-----|
-| `examples/*` | Demos only |
-| `eval/*` | Agent benchmarks |
-| Root `potato-train` package | Private monorepo root |
-| Unscoped `potato` | Name taken on npm; package is private |
 
 ## Troubleshooting
 
 | Issue | Fix |
 |-------|-----|
-| `EPRIVATE` | You published the **root** or **`packages/potato`**. Use `node scripts/release.mjs npm` instead. |
-| `ENEEDAUTH` | `npm login` or `export NPM_TOKEN=…` |
-| `403` on `@potato/*` | Create org **potato** on npmjs.com (public packages are free); you must own `@potato` |
-| `EPUBLISHCONFLICT` | Version already exists — bump versions in all packages |
-| `gh: command not found` | Install CLI or create release in UI from tag |
+| `EPRIVATE` | You published the **root** or **`packages/potato`**. Use `node scripts/release.mjs npm`. |
+| `ENEEDAUTH` | `export NPM_TOKEN=…` or `npm login` |
+| `EOTP` | Use an **Automation / bypass-2FA** token, or `NPM_OTP=123456` (6 digits from authenticator) |
+| `EPUBLISHCONFLICT` | Version already on registry — bump versions |
+| `E404 Scope not found` | Do **not** use `@potato/*` or `@potato-train/*` without an npm org. Use unscoped `potato-train-*`. |
+| Empty package on npm | Build first (`node scripts/release.mjs build`) so `dist/` exists |
+| `workspace:*` in tarball | Always publish via `scripts/release.mjs` (rewrites deps) |
+| `gh: command not found` | Install CLI or create release in GitHub UI |
 | No `origin` | `git remote add origin …` then push |

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { Effect } from "effect"
-import { potato, h } from "@potato/core"
-import { createServer } from "@potato/ssr"
+import { potato, h } from "potato-train-core"
+import { createServer } from "potato-train-ssr"
 import {
   createAuth,
   memorySessionStore,

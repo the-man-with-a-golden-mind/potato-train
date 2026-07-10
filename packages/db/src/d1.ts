@@ -1,5 +1,5 @@
 import { drizzle, type DrizzleD1Database } from "drizzle-orm/d1"
-import type { Middleware, PotatoContext } from "@potato/ssr"
+import type { Middleware, PotatoContext } from "potato-train-ssr"
 
 export type D1Db<TSchema extends Record<string, unknown> = Record<string, never>> =
   DrizzleD1Database<TSchema>

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest"
-import { potato } from "@potato/core"
-import { createServer } from "@potato/ssr"
+import { potato } from "potato-train-core"
+import { createServer } from "potato-train-ssr"
 import {
   dbMiddleware,
   getDb,

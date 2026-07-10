@@ -1,8 +1,8 @@
 {
   "name": "potato",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "Potato — monorepo meta re-exports (not published; npm name 'potato' is taken). Use @potato/core etc.",
+  "description": "Potato — monorepo meta re-exports (not published; npm name 'potato' is taken). Use potato-train-core etc.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -44,12 +44,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@potato/core": "workspace:*",
-    "@potato/jsx": "workspace:*",
-    "@potato/html": "workspace:*",
-    "@potato/ssr": "workspace:*",
-    "@potato/live": "workspace:*",
-    "@potato/debug": "workspace:*"
+    "potato-train-core": "workspace:*",
+    "potato-train-jsx": "workspace:*",
+    "potato-train-html": "workspace:*",
+    "potato-train-ssr": "workspace:*",
+    "potato-train-live": "workspace:*",
+    "potato-train-debug": "workspace:*"
   },
   "devDependencies": {
     "tsup": "^8.4.0",

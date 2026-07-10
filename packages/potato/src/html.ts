@@ -1,1 +1,1 @@
-export * from "@potato/html"
+export * from "potato-train-html"

@@ -1,5 +1,5 @@
-import { createSheetEngine, cellKey, indexToColLetters } from "@potato/formula"
-import type { CellValue } from "@potato/formula"
+import { createSheetEngine, cellKey, indexToColLetters } from "potato-train-formula"
+import type { CellValue } from "potato-train-formula"
 
 /** In-memory sheet backend with incremental formula engine. */
 export interface SheetMeta {

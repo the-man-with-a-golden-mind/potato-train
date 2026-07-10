@@ -15,6 +15,71 @@ import {
 } from "../src/index.js"
 import type { AppState, Emit, PotatoChild } from "../src/index.js"
 
+describe("DOM morph style cleanup", () => {
+  it("clears removed object-style keys", () => {
+    const state = {
+      events: {} as AppState["events"],
+      params: {},
+      query: {},
+      href: "/",
+      route: "/",
+      title: "",
+      cache: (() => ({})) as AppState["cache"],
+    } as AppState
+    const root = createRoot({ state, emit: () => {} })
+    const host = document.createElement("div")
+    document.body.appendChild(host)
+    root.mount(
+      host,
+      h("div", { style: { color: "red", fontSize: "20px" } }, "x"),
+    )
+    const el = host.firstElementChild as HTMLElement
+    expect(el.style.color).toBe("red")
+    expect(el.style.fontSize).toBe("20px")
+    root.update(h("div", { style: { color: "blue" } }, "x"))
+    expect(el.style.color).toBe("blue")
+    expect(el.style.fontSize).toBe("")
+  })
+})
+
+describe("render isolation", () => {
+  it("toString does not mutate app.state", () => {
+    const app = potato({ throwOnHandlerError: false })
+    app.use(
+      defineStore("u", { user: "global" }, () => {}),
+    )
+    app.route("/:id", (s) =>
+      h("span", null, `${(s as { user?: string }).user}:${s.params.id}`),
+    )
+    const before = { ...(app.state as object) }
+    const html = app.toString("/alice", { user: "req" })
+    expect(html).toContain("req:alice")
+    expect((app.state as { user?: string }).user).toBe("global")
+    expect(app.state.params).toEqual((before as { params?: object }).params ?? app.state.params)
+  })
+
+  it("emit during toString never hits global emitter", () => {
+    const app = potato({ throwOnHandlerError: false, debug: true })
+    let hits = 0
+    app.emitter.on("evil", () => {
+      hits++
+    })
+    app.use(defineStore("n", { n: 0 }, ({ on, patch, get }) => {
+      on("evil", () => patch({ n: get().n + 1 }))
+    }))
+    app.route("/", (_s, emit) => {
+      emit("evil")
+      return h("span", null, "x")
+    })
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
+    expect(app.toString("/")).toContain("x")
+    expect(hits).toBe(0)
+    expect((app.state as { n: number }).n).toBe(0)
+    expect(warn).toHaveBeenCalled()
+    warn.mockRestore()
+  })
+})
+
 describe("renderToString extras", () => {
   it("void tags, style object, boolean attrs, className", () => {
     const tree = h(

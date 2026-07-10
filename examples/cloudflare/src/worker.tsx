@@ -6,10 +6,10 @@ import {
   defineFeature,
   combineState,
   asRawApp,
-} from "@potato/core"
-import { createServer, logger } from "@potato/ssr"
-import { potatoWorker } from "@potato/cloudflare"
-import { liveClick } from "@potato/live"
+} from "potato-train-core"
+import { createServer, logger } from "potato-train-ssr"
+import { potatoWorker } from "potato-train-cloudflare"
+import { liveClick } from "potato-train-live"
 import { liveBootScript } from "../../_shared/live-boot.js"
 import tw from "./tw-inline.js"
 
@@ -79,10 +79,10 @@ export default potatoWorker({
   server,
   live: {
     app,
-    onEvent: (event, payload, session) => {
-      Object.assign(app.state, session.state)
-      app.emitter.emit(event, payload)
-      Object.assign(session.state, app.state)
+    // Session-local only — never app.emitter / app.state
+    onEvent: (event, _payload, session) => {
+      const s = session.state as { count: number }
+      if (event === "inc") s.count = Number(s.count ?? 0) + 1
     },
   },
 })

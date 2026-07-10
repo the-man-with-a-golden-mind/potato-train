@@ -29,12 +29,14 @@ pnpm deploy
 | Piece | Role |
 |--------|------|
 | `createApp` + `defineFeature` | Typed counter |
-| `@potato/ssr` + `@potato/cloudflare` | Worker `fetch` + Live WebSocket upgrade |
+| `potato-train-ssr` + `potato-train-cloudflare` | Worker `fetch` + Live WebSocket upgrade |
 | Tailwind | Inlined CSS string for the Worker bundle |
 | `liveClick('inc')` | Marks the button for Live |
+| Hub `onEvent` | Mutates **`session.state` only** (see `worker.tsx`) |
 | Inline Live boot | `examples/_shared/live-boot.ts` — joins WS and morphs patches |
 
-Without the Live boot script, buttons would be dead (same class of bug as old portfolio/trello).
+Without the Live boot script, buttons would be dead (same class of bug as old portfolio/trello).  
+Live handlers must not call `app.emitter` or mutate global `app.state`.
 
 ## Layout
 
@@ -49,5 +51,5 @@ wrangler.toml
 ## Notes
 
 - Rebuild CSS with `pnpm css` if you change classes without full `dev`.
-- DB optional: wire D1 via `@potato/db/d1` when `env.DB` is set.
+- DB optional: wire D1 via `potato-train-db/d1` when `env.DB` is set.
 - Health: `GET /api/health`

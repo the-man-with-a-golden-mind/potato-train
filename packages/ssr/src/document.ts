@@ -1,4 +1,4 @@
-import type { AppState } from "@potato/core"
+import type { AppState } from "potato-train-core"
 
 export interface DocumentOptions {
   title?: string

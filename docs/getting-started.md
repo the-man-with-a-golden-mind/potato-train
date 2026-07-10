@@ -22,7 +22,7 @@ pnpm build
 |------|---------|
 | Default demos (SPA, SSR, sheet, portfolio, trello) | `pnpm install` at root |
 | Cloudflare example | `cd examples/cloudflare && pnpm install` |
-| SQLite for `@potato/db/sqlite` | app: `pnpm add better-sqlite3` |
+| SQLite for `potato-train-db/sqlite` | app: `pnpm add better-sqlite3` |
 | Postgres driver | app: `pnpm add postgres` |
 | E2E browsers | `pnpm exec playwright install chromium` |
 
@@ -60,7 +60,7 @@ cd my-app && pnpm install && pnpm dev
 ### Hand-written minimal app
 
 ```ts
-import { createApp, defineFeature, combineState, useFeatures } from '@potato/core'
+import { createApp, defineFeature, combineState, useFeatures } from 'potato-train-core'
 
 type State = { count: number }
 type Events = {
@@ -102,7 +102,7 @@ With Vite + **Tailwind CSS v4**:
 ```ts
 // vite.config.ts
 import { defineConfig } from 'vite'
-import { potato } from '@potato/vite-plugin'
+import { potato } from 'potato-train-vite-plugin'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
@@ -145,8 +145,8 @@ Same architecture as day 1 — more features, not a new style.
 ## 4. Your first SSR server
 
 ```ts
-import { createApp, defineFeature, asRawApp } from '@potato/core'
-import { createServer, logger } from '@potato/ssr'
+import { createApp, defineFeature, asRawApp } from 'potato-train-core'
+import { createServer, logger } from 'potato-train-ssr'
 
 type State = { title: string }
 type Events = Record<string, never>

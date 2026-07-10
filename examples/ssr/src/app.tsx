@@ -8,8 +8,8 @@ import {
   asRawApp,
   type TypedPotatoApp,
   type PotatoApp,
-} from "@potato/core"
-import { liveClick } from "@potato/live"
+} from "potato-train-core"
+import { liveClick } from "potato-train-live"
 
 export type Todo = { id: number; text: string; done: boolean }
 

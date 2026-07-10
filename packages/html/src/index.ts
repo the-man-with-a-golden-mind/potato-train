@@ -1,5 +1,5 @@
-import { h, isVNode } from "@potato/core"
-import type { PotatoChild, Props, VNode } from "@potato/core"
+import { h, isVNode } from "potato-train-core"
+import type { PotatoChild, Props, VNode } from "potato-train-core"
 
 /**
  * Tagged template → VNode tree.
@@ -140,4 +140,4 @@ export function raw(htmlString: string): VNode {
   return h("span", { dangerouslySetInnerHTML: { __html: htmlString } })
 }
 
-export { h } from "@potato/core"
+export { h } from "potato-train-core"

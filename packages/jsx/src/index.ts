@@ -6,4 +6,4 @@ export {
   type JSX,
 } from "./runtime.js"
 
-export { h } from "@potato/core"
+export { h } from "potato-train-core"

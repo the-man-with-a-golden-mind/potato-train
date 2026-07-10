@@ -36,14 +36,14 @@ DOM cost stays O(viewport), network cost O(window), formula cost O(dirty cells).
 ## Measuring in the browser
 
 ```ts
-import { devtools } from '@potato/debug'
+import { devtools } from 'potato-train-debug'
 app.use(devtools())
 // console shows render timings when debug logging is on
 ```
 
 ## Formula engine
 
-`@potato/formula` is intentionally small (recursive descent, no dependency graph optimisations yet). For huge interdependent sheets:
+`potato-train-formula` is intentionally small (recursive descent, no dependency graph optimisations yet). For huge interdependent sheets:
 
 1. Evaluate only dirty cells (future work)  
 2. Or pre-aggregate on the backend  

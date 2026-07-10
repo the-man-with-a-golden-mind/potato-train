@@ -244,7 +244,7 @@ test.describe("example servers (spawn)", () => {
 
   test("ssr example health", async ({ request }) => {
     const port = 3191
-    startExample("@potato/example-ssr", port)
+    startExample("potato-train-example-ssr", port)
     await waitHttp(`http://127.0.0.1:${port}/api/health`)
     const j = await (await request.get(`http://127.0.0.1:${port}/api/health`)).json()
     expect(j.ok).toBe(true)
@@ -254,7 +254,7 @@ test.describe("example servers (spawn)", () => {
 
   test("spreadsheet example patch + interactive UI", async ({ page, request }) => {
     const port = 3192
-    startExample("@potato/example-spreadsheet", port)
+    startExample("potato-train-example-spreadsheet", port)
     await waitHttp(`http://127.0.0.1:${port}/api/health`)
 
     // API
@@ -318,7 +318,7 @@ test.describe("example servers (spawn)", () => {
 
   test("portfolio tick API + client asset", async ({ request }) => {
     const port = 3193
-    startExample("@potato/example-portfolio", port)
+    startExample("potato-train-example-portfolio", port)
     await waitHttp(`http://127.0.0.1:${port}/api/health`)
     const tick = await request.post(`http://127.0.0.1:${port}/api/portfolio/tick`)
     expect(tick.ok()).toBeTruthy()
@@ -330,7 +330,7 @@ test.describe("example servers (spawn)", () => {
 
   test("trello board html + client asset", async ({ page, request }) => {
     const port = 3194
-    startExample("@potato/example-trello", port)
+    startExample("potato-train-example-trello", port)
     await waitHttp(`http://127.0.0.1:${port}/api/health`)
     expect(
       await (await request.get(`http://127.0.0.1:${port}/api/health`)).json(),

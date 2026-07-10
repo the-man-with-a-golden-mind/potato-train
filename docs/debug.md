@@ -1,11 +1,11 @@
-# Debugger (`@potato/debug`)
+# Debugger (`potato-train-debug`)
 
 Potato’s developer tools show **what emitted**, **what re-rendered**, and **what changed in state**.
 
 ## Quick start
 
 ```ts
-import { devtools } from '@potato/debug'
+import { devtools } from 'potato-train-debug'
 
 const app = createApp<State, Events>({ state: … })
 app.use(devtools()) // before or after features — usually early
@@ -111,7 +111,7 @@ You see **which emit changed which fields** — including `patch` from features.
 | Goal | Approach |
 |------|----------|
 | Only user events in console | `quietFramework: true` |
-| Production | Do not load `@potato/debug` (or `if (import.meta.env.DEV)`) |
+| Production | Do not load `potato-train-debug` (or `if (import.meta.env.DEV)`) |
 | Custom overlay | `subscribe` + your own UI |
 | Live multiplayer | Debugger is per-client; server events appear when that client emits / receives |
 
@@ -120,7 +120,7 @@ You see **which emit changed which fields** — including `patch` from features.
 ## Example (SPA)
 
 ```ts
-import { devtools } from '@potato/debug'
+import { devtools } from 'potato-train-debug'
 
 const app = createApp<State, Events>({ state: combineState(counter) })
 app.use(devtools({ open: false }))

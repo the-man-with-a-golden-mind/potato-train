@@ -1,4 +1,4 @@
-import { createApp, defineStore, h } from "@potato/core"
+import { createApp, defineStore, h } from "potato-train-core"
 
 export type State = { count: number }
 export type Events = {

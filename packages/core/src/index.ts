@@ -1,5 +1,5 @@
 /**
- * @potato/core — typed Choo-shaped framework
+ * potato-train-core — typed Choo-shaped framework
  *
  * Product surface (apps):
  *   createApp · defineStore · defineFeature · h / JSX
@@ -8,7 +8,14 @@
  *
  * Low-level: potato() for adapters / untyped interop
  */
-export { potato, defineStore, Component } from "./app.js"
+export {
+  potato,
+  defineStore,
+  Component,
+  isolateState,
+  isolateStateForRender,
+  pureEmit,
+} from "./app.js"
 export type {
   PotatoApp,
   PotatoOptions,
@@ -19,6 +26,7 @@ export type {
   StoreApi,
   StoreSetup,
 } from "./app.js"
+export type { EmitterOptions } from "./emitter.js"
 
 export { h, Fragment, fragment, isVNode, normalizeChildren } from "./vnode.js"
 export { EVENTS } from "./events.js"

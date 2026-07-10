@@ -33,8 +33,13 @@ export function potato(opts: PotatoOptions = {}): PotatoApp {
   const hrefEnabled = opts.href !== false
   const hashMode = opts.hash === true
   const debug = opts.debug === true
+  const throwOnHandlerError =
+    opts.throwOnHandlerError ??
+    (debug ||
+      (typeof process !== "undefined" &&
+        process.env?.NODE_ENV !== "production"))
 
-  const emitter = createEmitter(debug)
+  const emitter = createEmitter({ debug, throwOnError: throwOnHandlerError })
   const router = createRouter()
   const stores: Store[] = []
 
@@ -52,7 +57,7 @@ export function potato(opts: PotatoOptions = {}): PotatoApp {
     if (typeof history !== "undefined" && historyEnabled) {
       history.pushState({}, "", href)
     }
-    applyLocation(href)
+    applyLocationTo(state, href)
     emit(EVENTS.NAVIGATE)
     emit(EVENTS.RENDER)
   })
@@ -62,13 +67,13 @@ export function potato(opts: PotatoOptions = {}): PotatoApp {
     if (typeof history !== "undefined" && historyEnabled) {
       history.replaceState({}, "", href)
     }
-    applyLocation(href)
+    applyLocationTo(state, href)
     emit(EVENTS.NAVIGATE)
     emit(EVENTS.RENDER)
   })
 
   emitter.on(EVENTS.POPSTATE, () => {
-    applyLocation(currentUrl())
+    applyLocationTo(state, currentUrl())
     emit(EVENTS.NAVIGATE)
     emit(EVENTS.RENDER)
   })
@@ -90,7 +95,8 @@ export function potato(opts: PotatoOptions = {}): PotatoApp {
     return location.pathname + location.search
   }
 
-  function applyLocation(location: string): void {
+  /** Apply routing fields onto a state bag (request-local or app). */
+  function applyLocationTo(target: AppState, location: string): void {
     const { pathname, search, hash } = parseLocation(location)
     let pathForMatch = pathname
     if (hashMode) {
@@ -98,14 +104,14 @@ export function potato(opts: PotatoOptions = {}): PotatoApp {
       pathForMatch = h.startsWith("/") ? h : `/${h || ""}`
     }
     const matched = router.match(pathForMatch + search, false)
-    state.href = hashMode ? pathForMatch : pathname
-    state.query = parseQuery(search)
+    target.href = hashMode ? pathForMatch : pathname
+    target.query = parseQuery(search)
     if (matched) {
-      state.route = matched.route
-      state.params = matched.params
+      target.route = matched.route
+      target.params = matched.params
     } else {
-      state.route = ""
-      state.params = {}
+      target.route = ""
+      target.params = {}
     }
   }
 
@@ -180,7 +186,7 @@ export function potato(opts: PotatoOptions = {}): PotatoApp {
       }
     }
 
-    applyLocation(currentUrl())
+    applyLocationTo(state, currentUrl())
     emit(EVENTS.DOMCONTENTLOADED)
   }
 
@@ -246,49 +252,42 @@ export function potato(opts: PotatoOptions = {}): PotatoApp {
       return el
     },
 
+    /**
+     * Render a route to HTML using an **isolated state snapshot**.
+     * Does not mutate `app.state` — safe for concurrent SSR / Live sessions.
+     * Pass per-request overlays via `partial` (params, loader data, session bag).
+     *
+     * **Views must be pure:** `emit` during this render is always a no-op
+     * (never hits the global emitter). Side effects belong in stores, loaders,
+     * or Live `onEvent`.
+     */
     toString(location: string, partial?: Partial<AppState>) {
       runStores()
-      const prev = {
-        href: state.href,
-        route: state.route,
-        params: { ...state.params },
-        query: { ...state.query },
-        title: state.title,
-      }
-      const partialKeys = partial ? Object.keys(partial) : []
-      const prevPartial: Record<string, unknown> = {}
-      for (const k of partialKeys) {
-        prevPartial[k] = state[k]
-      }
-      if (partial) Object.assign(state, partial)
-      applyLocation(location)
-      const matched = router.match(state.href)
-      if (!matched) {
-        Object.assign(state, prev)
-        Object.assign(state, prevPartial)
-        return ""
-      }
-      const tree = matched.view(state, emit)
-      const html = renderToString(tree, { state, emit })
-      Object.assign(state, prev)
-      Object.assign(state, prevPartial)
-      return html
+      const pure = pureEmit({ debug })
+      const snap = isolateStateForRender(state, partial, pure, opts.cache ?? 100)
+      applyLocationTo(snap, location)
+      const matched = router.match(snap.href)
+      if (!matched) return ""
+      snap.route = matched.route
+      snap.params = matched.params
+      const tree = matched.view(snap, pure)
+      return renderToString(tree, { state: snap, emit: pure })
     },
 
+    /**
+     * Like `toString` but returns the VNode tree; does not mutate `app.state`.
+     * Same pure-view rule: `emit` is a no-op and never reaches the global bus.
+     */
     toVNode(location: string, partial?: Partial<AppState>) {
       runStores()
-      const prev = {
-        href: state.href,
-        route: state.route,
-        params: { ...state.params },
-        query: { ...state.query },
-      }
-      if (partial) Object.assign(state, partial)
-      applyLocation(location)
-      const matched = router.match(state.href)
-      const tree = matched ? matched.view(state, emit) : null
-      Object.assign(state, prev)
-      return tree
+      const pure = pureEmit({ debug })
+      const snap = isolateStateForRender(state, partial, pure, opts.cache ?? 100)
+      applyLocationTo(snap, location)
+      const matched = router.match(snap.href)
+      if (!matched) return null
+      snap.route = matched.route
+      snap.params = matched.params
+      return matched.view(snap, pure)
     },
 
     render() {
@@ -331,6 +330,91 @@ function createState(
   state.events = EVENTS
   state.cache = bindCache(cacheSize, getState, () => emit)
   return state
+}
+
+/**
+ * Build a render-only state bag that does not share nested mutable refs with
+ * the live app state. By default reuses framework `events` only — **not** the
+ * live component cache (that closes over the real client `emit`).
+ */
+export function isolateState(
+  base: AppState,
+  partial?: Partial<AppState>,
+): AppState {
+  const { cache: _cache, events, ...rest } = base
+  let plain: Record<string, unknown>
+  try {
+    plain = JSON.parse(JSON.stringify(rest)) as Record<string, unknown>
+  } catch {
+    plain = { ...rest }
+    for (const k of Object.keys(plain)) {
+      const v = plain[k]
+      if (v && typeof v === "object") {
+        plain[k] = Array.isArray(v) ? [...v] : { ...(v as object) }
+      }
+    }
+  }
+  const snap = {
+    ...plain,
+    ...(partial ?? {}),
+    params: {
+      ...((plain.params as Record<string, string>) ?? {}),
+      ...(partial?.params ?? {}),
+    },
+    query: {
+      ...((plain.query as Record<string, string>) ?? {}),
+      ...(partial?.query ?? {}),
+    },
+    events,
+    // Placeholder — pure renders replace this with a render-local cache
+    cache: base.cache,
+  } as AppState
+  return snap
+}
+
+/**
+ * Snapshot + **render-local cache** bound to `pure` emit so component trees
+ * cannot reach the global emitter during SSR / toString.
+ */
+export function isolateStateForRender(
+  base: AppState,
+  partial: Partial<AppState> | undefined,
+  pure: Emit,
+  cacheSize: number,
+): AppState {
+  const snap = isolateState(base, partial)
+  snap.cache = bindCache(cacheSize, () => snap, () => pure)
+  return snap
+}
+
+export type PureEmitOptions = {
+  /** Force warnings (default: debug or non-production) */
+  debug?: boolean
+  warn?: boolean
+}
+
+/**
+ * Emit used while rendering views (SSR / toString / toVNode).
+ * Product rule: views are pure — only read `state` and return VNodes.
+ * **Never** forwards to the global emitter. Warns in dev when misused.
+ */
+export function pureEmit(opts: boolean | PureEmitOptions = false): Emit {
+  const o: PureEmitOptions =
+    typeof opts === "boolean" ? { debug: opts } : opts
+  const warn =
+    o.warn ??
+    (o.debug === true ||
+      (typeof process !== "undefined" &&
+        process.env?.NODE_ENV !== "production"))
+  const warned = new Set<string>()
+  return (event: string, ..._args: unknown[]) => {
+    if (!warn) return
+    if (warned.has(event)) return
+    warned.add(event)
+    console.warn(
+      `[potato] emit('${event}') during render is a no-op — views must be pure (use stores / loaders / Live onEvent)`,
+    )
+  }
 }
 
 

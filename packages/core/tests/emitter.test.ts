@@ -29,7 +29,7 @@ describe("createEmitter", () => {
   })
 
   it("routes listener errors to error handlers", () => {
-    const e = createEmitter()
+    const e = createEmitter({ throwOnError: false })
     const errHandler = vi.fn()
     e.on("error", errHandler)
     e.on("boom", () => {
@@ -37,6 +37,14 @@ describe("createEmitter", () => {
     })
     e.emit("boom")
     expect(errHandler).toHaveBeenCalled()
+  })
+
+  it("rethrows handler errors when throwOnError is true", () => {
+    const e = createEmitter({ throwOnError: true })
+    e.on("boom", () => {
+      throw new Error("fail")
+    })
+    expect(() => e.emit("boom")).toThrow("fail")
   })
 
   it("debug traces events", () => {

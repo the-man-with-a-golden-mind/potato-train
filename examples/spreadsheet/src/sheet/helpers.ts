@@ -1,4 +1,4 @@
-import { cellKey, parseRef } from "@potato/formula"
+import { cellKey, parseRef } from "potato-train-formula"
 import type { Row, SheetSlice } from "./types.js"
 import { DEFAULT_COL_W, MIN_COL_W, ROW_HEAD_W } from "./constants.js"
 

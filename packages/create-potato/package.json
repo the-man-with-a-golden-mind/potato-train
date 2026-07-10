@@ -1,18 +1,19 @@
 {
   "name": "create-potato",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Scaffold a new Potato app",
   "type": "module",
   "bin": {
-    "create-potato": "./dist/cli.js"
+    "create-potato": "dist/cli.js"
   },
   "files": [
     "dist",
     "templates"
   ],
   "scripts": {
-    "build": "tsup src/cli.ts --format esm --clean",
-    "typecheck": "tsc --noEmit"
+    "build": "tsup src/cli.ts --format esm --clean && chmod +x dist/cli.js",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "node -e \"const fs=require('fs');if(!fs.existsSync('dist')){console.error('dist/ missing — run pnpm build first');process.exit(1)}\""
   },
   "devDependencies": {
     "@types/node": "^22.13.10",
@@ -24,6 +25,7 @@
     "node": ">=20"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

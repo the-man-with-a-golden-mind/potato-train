@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { jsx, jsxs, jsxDEV, Fragment, h } from "../src/index.js"
-import { renderToString } from "@potato/core"
+import { renderToString } from "potato-train-core"
 
 describe("jsx runtime", () => {
   it("jsx/jsxs/jsxDEV", () => {

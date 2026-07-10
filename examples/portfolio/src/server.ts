@@ -1,4 +1,4 @@
-import { createServer, logger, cors } from "@potato/ssr"
+import { createServer, logger, cors } from "potato-train-ssr"
 import { join } from "node:path"
 import {
   bundleClient,

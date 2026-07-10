@@ -1,4 +1,4 @@
-import type { VirtualWindow } from "@potato/virtual"
+import type { VirtualWindow } from "potato-train-virtual"
 
 export type Cell = {
   key: string

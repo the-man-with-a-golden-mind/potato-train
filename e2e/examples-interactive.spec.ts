@@ -51,7 +51,7 @@ test.describe("interactive examples", () => {
 
   test("ssr live: add todo", async ({ page }) => {
     const port = 3201
-    startExample("@potato/example-ssr", port)
+    startExample("potato-train-example-ssr", port)
     await waitHttp(`http://127.0.0.1:${port}/api/health`)
     await waitHttp(`http://127.0.0.1:${port}/assets/client.js`)
     await page.goto(`http://127.0.0.1:${port}/`)
@@ -63,7 +63,7 @@ test.describe("interactive examples", () => {
 
   test("portfolio: simulate tick updates UI", async ({ page }) => {
     const port = 3202
-    startExample("@potato/example-portfolio", port)
+    startExample("potato-train-example-portfolio", port)
     await waitHttp(`http://127.0.0.1:${port}/api/health`)
     await waitHttp(`http://127.0.0.1:${port}/assets/client.js`)
     await page.goto(`http://127.0.0.1:${port}/`)
@@ -76,7 +76,7 @@ test.describe("interactive examples", () => {
 
   test("trello: add card via Live", async ({ page }) => {
     const port = 3203
-    startExample("@potato/example-trello", port)
+    startExample("potato-train-example-trello", port)
     await waitHttp(`http://127.0.0.1:${port}/api/health`)
     await waitHttp(`http://127.0.0.1:${port}/assets/client.js`)
     await page.goto(`http://127.0.0.1:${port}/`)

@@ -1,7 +1,7 @@
 /**
  * Live client for SSR todos — WebSocket morph patches.
  */
-import { connectLive } from "@potato/live/client"
+import { connectLive } from "potato-train-live/client"
 
 const proto = location.protocol === "https:" ? "wss" : "ws"
 connectLive({

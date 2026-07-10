@@ -9,7 +9,7 @@ import {
   asRawApp,
   type PotatoApp,
   type TypedPotatoApp,
-} from "@potato/core"
+} from "potato-train-core"
 import {
   getPortfolio,
   totals,

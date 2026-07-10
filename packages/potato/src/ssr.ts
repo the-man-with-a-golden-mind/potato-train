@@ -1,1 +1,1 @@
-export * from "@potato/ssr"
+export * from "potato-train-ssr"

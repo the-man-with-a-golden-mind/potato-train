@@ -1,7 +1,7 @@
 {
   "name": "potato-train",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Potato — modern TypeScript rewrite of Choo with optional SSR, LiveViews, JSX, auth, and DB",
   "type": "module",
   "packageManager": "pnpm@10.11.1",
@@ -24,11 +24,11 @@
     "test:e2e": "playwright test",
     "test:all": "pnpm test:coverage && pnpm test:e2e",
     "size": "node scripts/size-budget.mjs",
-    "dev:spa": "pnpm --filter @potato/example-spa dev",
-    "dev:ssr": "pnpm --filter @potato/example-ssr dev",
-    "dev:sheet": "pnpm --filter @potato/example-spreadsheet dev",
-    "dev:portfolio": "pnpm --filter @potato/example-portfolio dev",
-    "dev:trello": "pnpm --filter @potato/example-trello dev",
+    "dev:spa": "pnpm --filter potato-train-example-spa dev",
+    "dev:ssr": "pnpm --filter potato-train-example-ssr dev",
+    "dev:sheet": "pnpm --filter potato-train-example-spreadsheet dev",
+    "dev:portfolio": "pnpm --filter potato-train-example-portfolio dev",
+    "dev:trello": "pnpm --filter potato-train-example-trello dev",
     "dev:cf": "pnpm --dir examples/cloudflare dev",
     "ci": "pnpm build && pnpm test:coverage && pnpm test:e2e && pnpm size",
     "eval:types": "node scripts/eval-types.mjs",
@@ -48,9 +48,6 @@
     "happy-dom": "^20.10.6",
     "tailwindcss": "^4.1.11",
     "vitest": "^3.2.7"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": []
   },
   "engines": {
     "node": ">=20"

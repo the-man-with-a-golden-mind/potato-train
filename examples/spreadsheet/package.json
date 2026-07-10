@@ -1,5 +1,5 @@
 {
-  "name": "@potato/example-spreadsheet",
+  "name": "potato-train-example-spreadsheet",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -9,11 +9,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@potato/core": "workspace:*",
-    "@potato/formula": "workspace:*",
-    "@potato/ssr": "workspace:*",
-    "@potato/virtual": "workspace:*",
-    "@potato/jsx": "workspace:*"
+    "potato-train-core": "workspace:*",
+    "potato-train-formula": "workspace:*",
+    "potato-train-ssr": "workspace:*",
+    "potato-train-virtual": "workspace:*",
+    "potato-train-jsx": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.13.10",

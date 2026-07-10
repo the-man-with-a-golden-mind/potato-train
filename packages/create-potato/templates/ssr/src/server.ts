@@ -2,8 +2,8 @@
  * Minimal SSR + Live scaffold (Node http + ws).
  * Mirrors the working monorepo SSR example pattern.
  */
-import { createServer, logger, cors } from "@potato/ssr"
-import { createLiveHub } from "@potato/live"
+import { createServer, logger, cors } from "potato-train-ssr"
+import { createLiveHub } from "potato-train-live"
 import { createServer as createHttpServer } from "node:http"
 import { readFileSync, existsSync } from "node:fs"
 import { dirname, join } from "node:path"
@@ -83,10 +83,11 @@ const app = createAppRaw()
 
 const hub = createLiveHub({
   app,
+  // Mutate session.state only — views re-render from this bag
   onEvent: (event, payload, session) => {
-    Object.assign(app.state, session.state)
-    app.emitter.emit(event, payload)
-    Object.assign(session.state, app.state)
+    const s = session.state as { count: number }
+    if (event === "counter:inc") s.count += Number(payload ?? 1)
+    if (event === "counter:reset") s.count = 0
   },
 })
 

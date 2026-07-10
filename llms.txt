@@ -14,7 +14,8 @@
 createApp<State, Events>
   + defineFeature / defineStore (typed Events)
   + patch(partial)   // set + re-render
-  + view: only emit — never fetch/set in the view
+  + view: pure UI — read state, return VNodes
+  + client: emit intents | Live: liveClick → onEvent(session.state)
 ```
 
 - Refactors use **TypeScript**, not grep.
@@ -31,11 +32,34 @@ SSR HTML does **not** run `onclick` functions.
 | Client bundle `/assets/client.js` | Interactive SSR (sheet, portfolio) |
 | `liveClick` + WebSocket + `connectLive` | Live / multiplayer (trello, ssr) |
 
+### Pure views during SSR / Live HTML
+
+`app.toString` / SSR use a **no-op `emit`**. Views must not perform side effects while rendering.
+
+### Live production model
+
+```ts
+createLiveHub({
+  app,
+  onEvent: (event, payload, session) => {
+    // ✅ mutate session.state only
+  },
+})
+// ❌ never app.emitter.emit or Object.assign(app.state, session.state)
+```
+
+`onEvent` is **required**. Multiplayer: `sharedState(topic)`.
+
+### CORS
+
+`cors()` is same-origin by default. Cross-origin needs `cors({ origin: [...] })` or `cors({ origin: '*' })`.
+
 ## Forbidden
 
 - Untyped `emit('string')` without `Events`
 - `as any` / `as never` on state or emit
-- Business logic in views
+- Business logic / `fetch` in views
+- Live handlers that mutate global `app.state` via the emitter
 - TEA as the product default (`docs/architecture-tea.md` is optional research)
 
 ## Scaffold
@@ -49,15 +73,17 @@ pnpm create potato my-app --template=ssr
 ## Debugger
 
 ```ts
-import { devtools } from '@potato/debug'
+import { devtools } from 'potato-train-debug'
 app.use(devtools()) // Ctrl+Shift+P · window.__POTATO__ · state diffs
 ```
 
 See docs/debug.md.
 
-## Packages
+## Packages (npm)
 
-`@potato/core` (0 runtime deps) · jsx · ssr · live · auth · db · formula · virtual · cloudflare · debug · vite-plugin · create-potato
+Unscoped names: `potato-train-core` · `potato-train-jsx` · `potato-train-ssr` · `potato-train-live` · `potato-train-auth` · `potato-train-db` · `potato-train-formula` · `potato-train-virtual` · `potato-train-cloudflare` · `potato-train-debug` · `potato-train-vite-plugin` · `create-potato`
+
+(Unscoped `potato` is taken; monorepo meta package is private.)
 
 ## Examples to copy
 
@@ -66,10 +92,12 @@ See docs/debug.md.
 | examples/spa | SPA + Tailwind |
 | examples/spreadsheet | Client mount + virtual grid |
 | examples/portfolio | Client mount + REST |
-| examples/trello | Live multiplayer |
-| examples/ssr | Live + auth API |
+| examples/trello | Live multiplayer (`session.state`) |
+| examples/ssr | Live + auth API (`session.state`) |
+| examples/cloudflare | Workers + Live (`session.state`) |
 
 ## Do not
 
 - Install only inside `examples/*` (use monorepo root)
 - Expect Cloudflare in default `pnpm install` (optional: `cd examples/cloudflare && pnpm install`)
+- Run `npm publish` from monorepo root (private) — use `node scripts/release.mjs npm`

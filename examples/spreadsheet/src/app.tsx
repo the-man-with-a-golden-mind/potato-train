@@ -8,7 +8,7 @@ import {
   asRawApp,
   type PotatoApp,
   type TypedPotatoApp,
-} from "@potato/core"
+} from "potato-train-core"
 import { sheetFeature } from "./sheet/feature.js"
 import { SheetView } from "./sheet/view.js"
 import type { SheetState, SheetEvents } from "./sheet/types.js"

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { Effect } from "effect"
-import { potato, h, defineStore } from "@potato/core"
+import { potato, h, defineStore } from "potato-train-core"
 import {
   createServer,
   documentHtml,

@@ -1,8 +1,8 @@
 /**
  * Sheet feature — defineFeature wraps store logic with typed Events.
  */
-import { defineFeature } from "@potato/core"
-import { computeWindow, type VirtualWindow } from "@potato/virtual"
+import { defineFeature } from "potato-train-core"
+import { computeWindow, type VirtualWindow } from "potato-train-virtual"
 import { apiCell, apiPatch, apiWindow } from "./api.js"
 import {
   DEFAULT_COLS,

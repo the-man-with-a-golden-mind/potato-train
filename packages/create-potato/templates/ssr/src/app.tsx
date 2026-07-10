@@ -7,8 +7,8 @@ import {
   combineState,
   asRawApp,
   type PotatoApp,
-} from "@potato/core"
-import { liveClick } from "@potato/live"
+} from "potato-train-core"
+import { liveClick } from "potato-train-live"
 
 type State = { count: number }
 type Events = { "counter:inc": [n?: number]; "counter:reset": [] }

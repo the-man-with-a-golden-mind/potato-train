@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { html, raw } from "../src/index.js"
-import { h, renderToString } from "@potato/core"
+import { h, renderToString } from "potato-train-core"
 
 describe("html coverage", () => {
   it("nested tags and attrs variants", () => {

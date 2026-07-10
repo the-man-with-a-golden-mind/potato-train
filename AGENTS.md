@@ -10,15 +10,16 @@ Application code is fully described by:
 2. **`Events`** — map of event name → payload tuple
 3. **`emit(event, …)`** — only keys of `Events` (compile error otherwise)
 4. **`defineFeature` / `defineStore`** — handlers use `on` + **`patch`**
-5. **`view(state, emit)`** — pure UI; **only emit**, never fetch/set
-6. **`createServer`** — optional SSR + HTTP APIs
+5. **`view(state, emit)`** — pure UI; **emit only on the client**. During SSR/`toString`, `emit` is a **no-op** (views must not rely on side effects while rendering).
+6. **`createServer`** — optional SSR + HTTP APIs. Request state is isolated; never treat `app.state` as per-request.
+7. **Live** — `createLiveHub({ onEvent })` is **required**. Mutate **`session.state` only** (plus topic `sharedState`). Do not call `app.emitter` / mutate `app.state` in Live handlers.
 
 **Refactors use TypeScript, not grep.** If renaming an event does not fail `tsc`, the app is not typed correctly.
 
 ## The only app entry
 
 ```ts
-import { createApp, defineFeature, combineState, useFeatures } from '@potato/core'
+import { createApp, defineFeature, combineState, useFeatures } from 'potato-train-core'
 
 type State = { count: number }
 type Events = {
@@ -90,7 +91,7 @@ type Events = CounterEvents & BoardEvents
 ## Server
 
 ```ts
-import { asRawApp } from '@potato/core'
+import { asRawApp } from 'potato-train-core'
 const server = createServer({ app: asRawApp(app) })
 // or createServer({ app: app.raw })
 ```
@@ -112,20 +113,29 @@ const server = createServer({ app: asRawApp(app) })
 // ✅ Live pattern
 <button type="button" {...liveClick('save', id)}>Save</button>
 // + connectLive({ url: 'ws://…/__potato/live', topic: '…' })
-// + createLiveHub + WS upgrade on the server
+// + createLiveHub({ app, onEvent }) — onEvent mutates session.state only
+// + WS upgrade on the server
 ```
 
-Reference working examples: `examples/spreadsheet` (client mount), `examples/trello` / `examples/ssr` (Live + WS), `examples/spa` (Vite mount).
+During SSR / Live HTML (`toString`), **`emit` is a no-op** — views stay pure.
+
+Reference working examples: `examples/spreadsheet` (client mount), `examples/trello` / `examples/ssr` / `examples/cloudflare` (Live + session state), `examples/spa` (Vite mount).
 
 ## Live / multiplayer
 
 1. View: `liveClick('feature:action', payload)` / `liveSubmit('…')` — same names as `Events`
-2. Server: `createLiveHub({ app, onEvent, sharedState? })` + WebSocket upgrade
-3. Browser: `connectLive` from `@potato/live/client` (or `examples/_shared/live-boot.ts`)
+2. Server: `createLiveHub({ app, onEvent, sharedState? })` — **`onEvent` required**; mutate **`session.state` only**
+3. Browser: `connectLive` from `potato-train-live/client` (or `examples/_shared/live-boot.ts`)
+
+```ts
+// ❌ Never in Live handlers
+app.emitter.emit(event, payload)
+Object.assign(app.state, session.state)
+```
 
 ## Huge lists
 
-Use `@potato/virtual` + window APIs (see spreadsheet example).
+Use `potato-train-virtual` + window APIs (see spreadsheet example).
 
 ## Docs
 
@@ -143,7 +153,7 @@ Use `@potato/virtual` + window APIs (see spreadsheet example).
 ## Debugger
 
 ```ts
-import { devtools } from '@potato/debug'
+import { devtools } from 'potato-train-debug'
 app.use(devtools()) // Ctrl+Shift+P · window.__POTATO__ · state diffs
 ```
 

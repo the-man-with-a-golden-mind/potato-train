@@ -72,7 +72,7 @@ export const repo = {
 
 ```ts
 // src/app.ts — State + Events are the type spine (renames → tsc, not grep)
-import { createApp as createTypedApp, defineFeature, combineState } from '@potato/core'
+import { createApp as createTypedApp, defineFeature, combineState } from 'potato-train-core'
 import { repo } from './db'
 import type { Board } from './types'
 
@@ -146,7 +146,7 @@ See `examples/trello` for the full Live multiplayer board.
 
 ```ts
 // src/server.ts
-import { createServer, logger } from '@potato/ssr'
+import { createServer, logger } from 'potato-train-ssr'
 import { createApp } from './app'
 import { repo } from './db'
 
@@ -196,27 +196,50 @@ pnpm exec tsx src/server.ts
 # open http://localhost:3030
 ```
 
-## 6. Level-up checklist
+## 6. Live multiplayer (production model)
+
+Views use `liveClick` / `liveSubmit` (data attributes). The hub **must** implement `onEvent` and mutate **session state** (plus topic shared bag) — not the global app bus:
+
+```ts
+const hub = createLiveHub({
+  app,
+  broadcast: true,
+  sharedState: () => ({ board: snapshot(), peers: 0 }),
+  onEvent: (event, payload, session) => {
+    // domain updates from payload…
+    if (event === 'card:move') moveCard(/* … */)
+    const shared = hub.getShared(TOPIC)
+    shared.board = snapshot()
+    session.state.board = shared.board as never
+    // ❌ never: app.emitter.emit(event, payload)
+  },
+})
+```
+
+HTML patches come from pure `app.toString(href, session.state)`.
+
+## 7. Level-up checklist
 
 | Feature | How |
 |---------|-----|
-| Auth | `@potato/auth` middleware; board.userId |
-| Persist | `@potato/db` + Drizzle tables `boards/lists/cards` |
-| Live multiplayer | `@potato/live` — broadcast `card:move` patches |
-| Cloudflare | `potatoWorker({ server })` + D1 |
+| Auth | `potato-train-auth` middleware; board.userId |
+| Persist | `potato-train-db` + Drizzle tables `boards/lists/cards` |
+| Live multiplayer | `onEvent` + `session.state` + `sharedState` (see above) |
+| Cloudflare | `potatoWorker({ server, live: { app, onEvent } })` + D1 |
 | Optimistic UI | update local state before `fetch` resolves; rollback on error |
 | Drag & drop | HTML5 DnD → same `card:move` event |
 
-## 7. Why this maps cleanly to Potato
+## 8. Why this maps cleanly to Potato
 
 - **Lists/cards** = pure view over serializable board state  
-- **Move card** = one `PATCH` field update (`listId`)  
-- **Add card** = `POST` + replace board snapshot  
-- **SSR** = first paint with `page('/')` loader  
+- **Move card** = one `PATCH` / Live event (`listId`)  
+- **Add card** = `POST` / Live event + replace board snapshot  
+- **SSR** = first paint with isolated request state  
+- **Live** = session-local state, multiplayer via topic shared bag  
 
 Same patterns power the spreadsheet (`PATCH` cell) and portfolio (`PATCH` holding) examples.
 
 ## Next
 
 - Spreadsheet tutorial: [spreadsheet.md](./spreadsheet.md)  
-- Production DB: see `@potato/db` in [api.md](../api.md)
+- Production DB: see `potato-train-db` in [api.md](../api.md)
