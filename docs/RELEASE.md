@@ -105,7 +105,9 @@ pnpm release:github
 ```bash
 npm view potato-train-core version
 npm view create-potato version
-pnpm create potato /tmp/potato-smoke
+pnpm create potato /tmp/potato-smoke -- --template=ssr
+# also: npm create potato@latest /tmp/potato-smoke-npm -- --ssr
+# also: bun create potato /tmp/potato-smoke-bun --template=ssr
 ```
 
 ## Troubleshooting

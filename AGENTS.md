@@ -163,6 +163,12 @@ See [docs/debug.md](./docs/debug.md).
 
 ```bash
 pnpm --filter create-potato build
-pnpm create potato my-app              # spa
-pnpm create potato my-app --template=ssr
+
+# Any package manager (flags after -- for npm/pnpm):
+npm create potato@latest my-app -- --template=ssr
+pnpm create potato my-app -- --template=ssr
+bun create potato my-app --template=ssr
+
+# From monorepo without publishing:
+node packages/create-potato/dist/cli.js my-app --template=ssr
 ```

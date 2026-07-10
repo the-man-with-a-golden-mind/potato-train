@@ -12,21 +12,32 @@ Packages are published as **`potato-train-*`** and **`create-potato`** (see [CHA
 
 ## Option A — Scaffold (recommended)
 
+Works with **npm**, **pnpm**, and **bun**. Pass flags after `--` for npm/pnpm so the CLI receives them.
+
 ```bash
-# after create-potato is published
+# SPA (default)
+npm create potato@latest my-app
 pnpm create potato my-app
-# or: npm create potato@latest my-app
-# or: pnpm create potato my-app --template=ssr
+bun create potato my-app
+
+# SSR + Live
+npm create potato@latest my-app -- --template=ssr
+pnpm create potato my-app -- --template=ssr
+bun create potato my-app --template=ssr
+# also: --ssr
 
 cd my-app
-pnpm install
-pnpm dev
+npm install && npm run dev
+# or: pnpm install && pnpm dev
+# or: bun install && bun run dev
 ```
 
 | Template | Stack |
 |----------|--------|
 | `spa` (default) | Vite + Tailwind + `createApp` + features |
 | `ssr` | Node server + Live WebSocket + Tailwind |
+
+> **Bug fixed in create-potato@0.2.1+:** older versions skipped templates when installed under `node_modules` (path contained the string `node_modules`). Use `@latest` or `>=0.2.1`.
 
 ## Option B — Manual SPA
 

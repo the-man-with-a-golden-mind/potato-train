@@ -16,7 +16,10 @@ Safety-focused release of **Potato** — a typed, Choo-shaped TypeScript framewo
 ## Install
 
 ```bash
-pnpm create potato my-app
+# npm / pnpm / bun (flags after -- for npm & pnpm)
+npm create potato@latest my-app -- --template=ssr
+pnpm create potato my-app -- --template=ssr
+bun create potato my-app --template=ssr
 # or
 pnpm add potato-train-core potato-train-jsx
 ```

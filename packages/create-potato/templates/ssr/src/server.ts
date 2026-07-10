@@ -16,7 +16,7 @@ const root = join(__dirname, "..")
 const cssPath = join(root, "dist/styles.css")
 const tw = existsSync(cssPath)
   ? readFileSync(cssPath, "utf8")
-  : "/* run: pnpm css */"
+  : "/* run: npm run css */"
 
 /** Inline Live client (queue until WS open) */
 const liveBoot = `<script type="module">
@@ -85,7 +85,9 @@ const hub = createLiveHub({
   app,
   // Mutate session.state only — views re-render from this bag
   onEvent: (event, payload, session) => {
-    const s = session.state as { count: number }
+    // session.state is AppState + feature fields; narrow via unknown for scaffolds
+    const s = session.state as unknown as { count: number }
+    if (typeof s.count !== "number") s.count = 0
     if (event === "counter:inc") s.count += Number(payload ?? 1)
     if (event === "counter:reset") s.count = 0
   },

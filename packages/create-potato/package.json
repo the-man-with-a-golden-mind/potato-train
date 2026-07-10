@@ -1,6 +1,6 @@
 {
   "name": "create-potato",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Scaffold a new Potato app",
   "type": "module",
   "bin": {
@@ -13,7 +13,8 @@
   "scripts": {
     "build": "tsup src/cli.ts --format esm --clean && chmod +x dist/cli.js",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "node -e \"const fs=require('fs');if(!fs.existsSync('dist')){console.error('dist/ missing — run pnpm build first');process.exit(1)}\""
+    "test": "node ../../scripts/test-package.mjs",
+    "prepublishOnly": "node -e \"const fs=require('fs');if(!fs.existsSync('dist')){console.error('dist/ missing — run pnpm build first');process.exit(1)};if(!fs.existsSync('templates/ssr')){console.error('templates/ssr missing');process.exit(1)};if(!fs.existsSync('templates/spa')){console.error('templates/spa missing');process.exit(1)}\""
   },
   "devDependencies": {
     "@types/node": "^22.13.10",

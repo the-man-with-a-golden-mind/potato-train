@@ -7,9 +7,28 @@
 | `pnpm test` | Vitest unit suite (from monorepo root) |
 | `pnpm test:coverage` | Unit + coverage report + **honest** thresholds |
 | `pnpm test:e2e` | Playwright (browser + spawned example servers) |
-| `pnpm test:all` | coverage + e2e |
+| `pnpm test:e2e:cli` | **create-potato** scaffold spa+ssr → install → build/run |
+| `pnpm test:e2e:cli:npm` | Same CLI e2e with `PM=npm` |
+| `pnpm test:all` | coverage + playwright e2e + CLI e2e |
 | `pnpm test:bench` | Performance benches |
 | `pnpm --filter potato-train-core test` | One package (uses root vitest config) |
+
+### create-potato CLI e2e
+
+```bash
+pnpm build
+pnpm test:e2e:cli          # default PM (pnpm if present)
+PM=npm pnpm test:e2e:cli   # force npm install
+KEEP=1 pnpm test:e2e:cli   # keep temp dir for debugging
+```
+
+What it does:
+
+1. Builds monorepo packages + create-potato  
+2. Stages CLI under a path containing `node_modules` (regression for template filter bug)  
+3. Scaffolds **spa** and **ssr** via CLI  
+4. Rewrites `potato-train-*` deps to local `npm pack` tarballs  
+5. Installs deps, runs **vite build** (spa) and **typecheck + server /api/health** (ssr)
 
 Per-package scripts call `scripts/test-package.mjs` so they run from the monorepo
 root with the shared config (package-local `vitest --dir tests` does **not** match

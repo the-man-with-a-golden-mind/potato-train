@@ -211,12 +211,33 @@ If you only changed classes, restart the server so CLI rebuilds `dist/styles.css
 ## Scaffold (`create-potato`)
 
 ```bash
-pnpm --filter create-potato build
-pnpm create potato my-app
-pnpm create potato my-app --template=ssr
+# Prefer @latest (0.2.1+ fixes template copy under node_modules)
+npm create potato@latest my-app -- --template=ssr
+pnpm create potato my-app -- --template=ssr
+bun create potato my-app --template=ssr
 ```
 
-Scaffolded apps depend on **published** `potato-train-*` versions (`^0.2.0`).  
+### `Template missing: …/templates/ssr` (or empty app)
+
+**Cause (create-potato &lt; 0.2.1):** copy filter treated any path containing the substring `node_modules` as skippable. When the CLI ran from `node_modules/create-potato/…`, the whole template was skipped.
+
+**Fix:** use **create-potato@0.2.1+**, or scaffold from the monorepo:
+
+```bash
+pnpm --filter create-potato build
+node packages/create-potato/dist/cli.js my-app --template=ssr
+```
+
+### Flags ignored with pnpm/npm
+
+Pass CLI flags after `--`:
+
+```bash
+pnpm create potato my-app -- --template=ssr
+npm create potato@latest my-app -- --ssr
+```
+
+Scaffolded apps depend on **published** `potato-train-*` versions.  
 Until publish, point `package.json` at the monorepo with `workspace:` / `link:` or develop inside `examples/`.
 
 ---

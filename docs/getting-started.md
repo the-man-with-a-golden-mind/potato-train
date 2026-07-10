@@ -12,9 +12,10 @@
 ```bash
 git clone <this-repo>
 cd potato-train
-pnpm install
-pnpm build
+pnpm setup          # install + build packages (or: pnpm install && pnpm build)
 ```
+
+Always use **Node ≥ 20** (22+ recommended). The monorepo is **pnpm** for workspace install; scaffolded apps work with npm / pnpm / bun.
 
 ### Keeping installs lean
 
@@ -53,7 +54,12 @@ Or scaffold:
 
 ```bash
 pnpm --filter create-potato build
-pnpm create potato my-app
+# npm / pnpm / bun:
+pnpm create potato my-app -- --template=spa
+# or: npm create potato@latest my-app
+# or: bun create potato my-app
+# SSR: add -- --template=ssr (npm/pnpm) or --template=ssr (bun)
+# monorepo CLI: node packages/create-potato/dist/cli.js my-app --template=ssr
 cd my-app && pnpm install && pnpm dev
 ```
 

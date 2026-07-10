@@ -1,6 +1,15 @@
-# Potato 🚂
+<p align="center">
+  <img src="./assets/readme-banner.png" alt="Potato Train — typed Choo-shaped TypeScript framework" width="800" />
+</p>
 
-**A typed, Choo-shaped TypeScript framework** — small API, events + state + views, built for humans and AI agents.
+<p align="center">
+  <strong>A typed, Choo-shaped TypeScript framework</strong><br />
+  <sub>small API · events + state + views · built for humans and AI agents</sub>
+</p>
+
+<p align="center">
+  <img src="./assets/potato-train-icon.png" alt="Potato Train logo" width="72" height="72" />
+</p>
 
 | | |
 |---|---|
@@ -14,8 +23,8 @@
 
 ## Architecture in one sentence
 
-> **`createApp<State, Events>` + features + `patch` + views that only `emit`.**  
-> Refactors use **TypeScript**, not grep.
+> **`createApp<State, Events>` + features + `patch` + pure views.**  
+> Client **`emit`s intents**; Live **`onEvent(session.state)`**. Refactors use **TypeScript**, not grep.
 
 ```ts
 import { createApp, defineFeature, combineState, useFeatures } from 'potato-train-core'
@@ -68,8 +77,11 @@ pnpm dev:trello       # multiplayer Live board
 
 ```bash
 pnpm --filter create-potato build
-pnpm create potato my-app                 # SPA
-pnpm create potato my-app --template=ssr  # SSR
+
+# npm / pnpm / bun (use -- before flags with npm & pnpm):
+npm create potato@latest my-app -- --template=ssr
+pnpm create potato my-app -- --template=ssr
+bun create potato my-app --template=ssr
 ```
 
 ### Lean installs
@@ -187,13 +199,16 @@ See **[examples/README.md](./examples/README.md)** for an overview; each example
 ## Tests
 
 ```bash
+pnpm setup            # install + build packages
 pnpm test             # unit
 pnpm test:coverage    # unit + coverage gate
-pnpm test:e2e         # Playwright
-pnpm test:all         # coverage + e2e
+pnpm test:e2e         # Playwright (examples)
+pnpm test:e2e:cli     # create-potato: scaffold spa+ssr → install → build/run
+pnpm test:e2e:cli:npm # same with PM=npm
+pnpm test:all         # coverage + playwright + CLI e2e
 pnpm test:bench
 pnpm size
-pnpm ci               # build + coverage + e2e + size
+pnpm ci               # build + coverage + e2e + CLI e2e + size
 ```
 
 ---

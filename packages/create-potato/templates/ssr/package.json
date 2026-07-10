@@ -4,8 +4,8 @@
   "type": "module",
   "scripts": {
     "css": "tailwindcss -i ./src/styles.css -o ./dist/styles.css --minify",
-    "dev": "pnpm css && tsx watch --tsconfig tsconfig.json src/server.ts",
-    "start": "pnpm css && tsx --tsconfig tsconfig.json src/server.ts",
+    "dev": "npm run css && tsx watch --tsconfig tsconfig.json src/server.ts",
+    "start": "npm run css && tsx --tsconfig tsconfig.json src/server.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -22,5 +22,8 @@
     "tailwindcss": "^4.1.11",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

@@ -22,6 +22,16 @@ Safety-focused release for the first public package set.
 - Coverage thresholds now include core runtime modules instead of excluding them behind a false 100% gate.
 - `.pnpm-store/` is ignored.
 
+## [0.2.1] — 2026-07-10
+
+### `create-potato`
+
+- **Fix:** template copy no longer skips files when the package lives under `node_modules` (broke `pnpm create potato … --template=ssr`)
+- Works with **npm**, **pnpm**, and **bun** create flows; docs use `--` for npm/pnpm flags
+- Scaffolded SSR scripts use portable `npm run css` (works under npm/pnpm/bun)
+- Detect package manager for post-scaffold install/dev hints
+- Integration tests simulate a real `node_modules` install path
+
 ## [0.1.0] — 2026-07-09
 
 First public release of the monorepo (package names: **`potato-train-*`**).

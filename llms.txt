@@ -65,10 +65,17 @@ createLiveHub({
 ## Scaffold
 
 ```bash
+# npm / pnpm need `--` before flags; bun does not
+npm create potato@latest my-app -- --template=ssr
+pnpm create potato my-app -- --template=ssr
+bun create potato my-app --template=ssr
+
+# monorepo without publishing:
 pnpm --filter create-potato build
-pnpm create potato my-app
-pnpm create potato my-app --template=ssr
+node packages/create-potato/dist/cli.js my-app --template=ssr
 ```
+
+Require **create-potato@0.2.1+** (older versions skip templates under `node_modules` paths).
 
 ## Debugger
 
