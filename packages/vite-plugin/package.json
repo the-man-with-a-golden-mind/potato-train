@@ -1,6 +1,6 @@
 {
   "name": "potato-train-vite-plugin",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Official Vite plugin for Potato (JSX, aliases, dev defaults)",
   "type": "module",
   "main": "./dist/index.js",

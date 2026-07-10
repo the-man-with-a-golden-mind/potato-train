@@ -1,6 +1,6 @@
 {
   "name": "potato-train-jsx",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "JSX runtime for Potato (automatic + classic)",
   "type": "module",
   "main": "./dist/index.js",

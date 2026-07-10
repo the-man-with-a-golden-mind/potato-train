@@ -361,10 +361,11 @@ export function cors(
     }
 
     if (ctx.method === "OPTIONS") {
+      // A cross-origin preflight from a disallowed origin fails explicitly;
+      // same-origin (or no Origin header at all) still gets a plain 204.
       if (reqOrigin && !allow) {
         return new Response("CORS Not Allowed", { status: 400 })
       }
-      // Preflight: 204 even when origin denied (browser treats missing ACAO as fail)
       return new Response(null, { status: 204, headers: ctx.headers })
     }
     return next()

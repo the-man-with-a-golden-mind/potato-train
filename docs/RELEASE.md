@@ -1,6 +1,8 @@
 # Release guide (npm + GitHub)
 
-Ship Potato **0.2.0** with the release script.
+Ship Potato with the release script. Packages version independently — check
+each package's own `package.json` for what's actually changing this release
+rather than assuming one number applies to everything.
 
 ## Prerequisites
 
@@ -58,7 +60,9 @@ pnpm install
 # Dry-run
 DRY_RUN=1 node scripts/release.mjs npm
 
-# Real publish (builds dist, rewrites workspace:* → ^0.2.0, npm publish each package)
+# Real publish (builds dist, rewrites workspace:* to each dep's real current
+# version, skips any package whose own version is already on the registry,
+# and publishes the rest)
 export NPM_TOKEN=npm_...   # automation token
 node scripts/release.mjs npm
 ```
@@ -98,6 +102,16 @@ pnpm release              # preflight + npm + github
 SKIP_E2E=1 pnpm release:preflight
 pnpm release:npm
 pnpm release:github
+```
+
+`release:github` (and `release`) tag `v<version>`. If only one package was
+newly published this run, `all` uses that package's version automatically;
+otherwise (or when calling `github` on its own) it falls back to the root
+`package.json` version. Pass an explicit version to force it either way:
+
+```bash
+node scripts/release.mjs github 0.3.0
+node scripts/release.mjs all 0.3.0
 ```
 
 ## Verify

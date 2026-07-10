@@ -1,6 +1,6 @@
 {
   "name": "potato-train-virtual",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Virtual list/grid windowing for Potato (huge tables without huge DOM)",
   "type": "module",
   "main": "./dist/index.js",

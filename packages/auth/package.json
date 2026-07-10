@@ -1,6 +1,6 @@
 {
   "name": "potato-train-auth",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Potato auth — sessions, password hashing, middleware (Effect-friendly)",
   "type": "module",
   "main": "./dist/index.js",

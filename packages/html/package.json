@@ -1,6 +1,6 @@
 {
   "name": "potato-train-html",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Tagged template HTML for Potato (nanohtml-inspired)",
   "type": "module",
   "main": "./dist/index.js",

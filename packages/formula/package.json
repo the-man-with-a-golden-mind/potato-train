@@ -1,6 +1,6 @@
 {
   "name": "potato-train-formula",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Tiny spreadsheet formula DSL for Potato (SUM, IF, refs, arithmetic)",
   "type": "module",
   "main": "./dist/index.js",

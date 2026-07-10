@@ -10,12 +10,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "potato-train-core": "^0.2.0",
-    "potato-train-debug": "^0.2.0",
-    "potato-train-jsx": "^0.2.0"
+    "potato-train-core": "^0.3.0",
+    "potato-train-debug": "^0.3.0",
+    "potato-train-jsx": "^0.3.0"
   },
   "devDependencies": {
-    "potato-train-vite-plugin": "^0.2.0",
+    "potato-train-vite-plugin": "^0.3.0",
     "@tailwindcss/vite": "^4.1.11",
     "tailwindcss": "^4.1.11",
     "typescript": "^5.8.2",
